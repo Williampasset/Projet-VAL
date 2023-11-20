@@ -6,7 +6,7 @@ class Rame {
 private:
 	const int id = 0;
 	int nbpassager = 0;
-	float v = 0;//vitesse actuelle
+	double v = 0;//vitesse actuelle
 	double distanceDA = 1;
 	//pas modifiable 
 	float distanceAcc = 200;
@@ -25,7 +25,7 @@ public:
 	~Rame(){
 		std::cout<<"Fin Rame"<<std::endl;
 	}
-	void setV(const float& v_){
+	void setV(const double& v_){
 		v = v_;
 	}
 	void setDistanceDA(const double& distanceDA_){
@@ -40,7 +40,7 @@ public:
 	int getNbpassager() const{
 		return nbpassager;
 	}
-	float getV() const{
+	double getV() const{
 		return v;
 	}
 	double getDistanceDArame() const{
@@ -52,8 +52,8 @@ class Station {
 	private : 
 		int Nbpersonne = 0; 
 		const std::string nom; 
-		float DistanceDA; 
-		bool etatMA = false;
+		double DistanceDA=0; 
+		bool etatMA = true;
 		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
 		float Tempsarretsec = 3; 
 	public:
@@ -66,7 +66,7 @@ class Station {
 		~Station(){
 			std::cout<<"Fin Station"<<std::endl;
 		}
-		void setNbpersonne(const int& Nbpersonne_){
+		void setNbpassager(const int& Nbpersonne_){
 			Nbpersonne = Nbpersonne_;
 		}
 		void setEtatMA(const bool& etatMA_){
@@ -75,10 +75,10 @@ class Station {
 		std::string getNom() const{
 			return nom;
 		}
-		int getNbpersonne() const{
+		int getNbpassager() const{
 			return Nbpersonne;
 		}
-		float getDistanceDAstation() const{
+		double getDistanceDAstation() const{
 			return DistanceDA;
 		}
 		bool getEtatMA() const{
