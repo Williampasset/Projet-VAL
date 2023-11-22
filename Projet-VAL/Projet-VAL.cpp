@@ -11,20 +11,18 @@
 
 using namespace std;
 
-//template <typename T>
-void passager(Station& objet){
-	auto n = rand() % 10;
-	objet.setNbpassager(n);
-	cout<<"Nombre de passager station: "<<objet.getNbpassager()<<endl;
+void passager(vector<Station>& station){
+	for(auto i = 0; i<station.size(); i++){
+		auto n = rand() % 10 + 1;
+		station.at(i).setNbpassager(n);
+		cout<<"Nombre de passager station "<<station.at(i).getNom()<<" : "<<station.at(i).getNbpassager()<<endl;
+	}
 }
-void passager2(Rame& objet){
-	auto n = rand() % 10 + 1;
-	objet.setNbpassager(n);
-	cout<<"Nombre de passager rame: "<<objet.getNbpassager()<<endl;
-}
-void avancer(std::stop_token stop_token, Rame rame, Station station) {
-	while (!stop_token.stop_requested()) {
-		auto distance=rame.getDistanceDArame(); 
+
+void avancer(Rame rame, Station station) {
+	auto distance=rame.getDistanceDArame(); 
+	cout<<"Station:"<<station.getNom()<<endl;
+	while(rame.getDistanceDArame() < station.getDistanceDAstation() - 1){
 		if (distance < 200) {
 			std::this_thread::sleep_for(100ms);
 			distance += (0.083) * distance;
@@ -38,9 +36,6 @@ void avancer(std::stop_token stop_token, Rame rame, Station station) {
 			rame.setDistanceDA(distance);
 			std::cout << "distance rame deceleration :  " << distance << std::endl;
 			rame.setV(16.6 + (0.083)*(station.getDistanceDAstation() - 200 - distance));
-			if(station.getDistanceDAstation() - distance < 1){
-				station.setEtatMA(0);
-			}
 		}
 		else{
 			std::this_thread::sleep_for(1s);
@@ -50,20 +45,21 @@ void avancer(std::stop_token stop_token, Rame rame, Station station) {
 			rame.setV(16.6);
 		}		
 	}
+	cout<<"Arrêt station"<<endl;
 }
 
-void arret(std::stop_token stop_token, Rame rame, Station station){
-	//srand (time(NULL));
+void arret(Rame rame, Station station){
 		if(station.getNbpassager()>0){
-			cout<<"Test"<<endl;
-			auto n = rand() % (rame.getNbpassager());
+			auto n = 0;
+			if(station.getDistanceDAstation() != 0){
+				n = rand() % (rame.getNbpassager());
+			}
 			cout<<"Nombre de personne qui sortent: "<<n<<endl;
 			for(auto i = 0; i<n; i++){
 				std::this_thread::sleep_for(0.5s);
 			}
 			rame.setNbpassager(rame.getNbpassager() - n);
 			if(station.getNbpassager()>= (10 - rame.getNbpassager())){
-				cout<<"Test2"<<endl;
 				auto k = 10 - rame.getNbpassager();
 				station.setNbpassager(station.getNbpassager() - (10 - rame.getNbpassager()));
 				for(auto i = 0; i<k; i++){
@@ -72,7 +68,6 @@ void arret(std::stop_token stop_token, Rame rame, Station station){
 				rame.setNbpassager(10);
 			}
 			else{
-				cout<<"Test3"<<endl;
 				auto j = station.getNbpassager();
 				rame.setNbpassager(rame.getNbpassager() + station.getNbpassager());
 				for(auto i = 0; i<j; i++){
@@ -81,37 +76,40 @@ void arret(std::stop_token stop_token, Rame rame, Station station){
 				station.setNbpassager(0);
 			}
 		}
-		cout<<"Test4"<<endl;
 		std::this_thread::sleep_for(3s);
-		station.setEtatMA(1);
 		cout<<"Nombre de passager rame: "<<rame.getNbpassager()<<endl;
 		cout<<"Nombre de passager station: "<<station.getNbpassager()<<endl;
 }
 
 void fonctionnement(std::stop_token stop_token, Rame rame, vector<Station> station){
 	int i = 0;
-	while(i!=2){
+	while(!stop_token.stop_requested()){
+		cout<<i<<endl;
+		cout<<station.at(i).getNom()<<endl;
 		if(station.at(i).getEtatMA()){
-			avancer(stop_token, rame, station.at(i + 1));
+			cout<<"Test6"<<endl;
+			avancer(rame, station.at(i + 1));
+			station.at(i+1).setEtatMA(false);
+			i++;
 		}
 		else{
-			arret(stop_token, rame, station.at(i + 1));
+			cout<<"Test7"<<endl;
+			arret(rame, station.at(i));
+			station.at(i).setEtatMA(true);
 		}
-		i++;
 	}
-	
 }
 
 int main()
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
-	//vector<Rame> rames;
+	vector<Rame> rames;
 	vector<Station> stations; 
 	//création des rames : 
 	Rame rame(1);
 	//Rame rame1(2);
 	//Rame rame2(3);
-	//rames.push_back(rame); 
+	rames.push_back(rame); 
 	//rames.push_back(rame1);
 	//rames.push_back(rame2);
 	//création des stations : 
@@ -124,8 +122,7 @@ int main()
 	stations.push_back(station2);
 	//stations.push_back(station3);
 	//implémentation des passagers par station au départ 
-	passager(station1);
-	passager2(rame);
+	passager(stations);
 	std::stop_source s_source;
 	// if(station1.getEtatMA()){
 	// 	

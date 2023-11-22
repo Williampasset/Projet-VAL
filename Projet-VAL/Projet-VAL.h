@@ -40,6 +40,9 @@ public:
 	int getNbpassager() const{
 		return nbpassager;
 	}
+	int getnbpassagermax() const{
+		return nbpassagermax;
+	}
 	double getV() const{
 		return v;
 	}
@@ -53,7 +56,7 @@ class Station {
 		int Nbpersonne = 0; 
 		const std::string nom; 
 		double DistanceDA=0; 
-		bool etatMA = true;
+		bool etatMA = false;
 		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
 		float Tempsarretsec = 3; 
 	public:
