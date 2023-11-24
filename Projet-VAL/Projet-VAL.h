@@ -59,12 +59,14 @@ class Station {
 		bool etatMA = false;
 		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
 		float Tempsarretsec = 3; 
+		int Depart = 0; //0 si non, 1 si oui, 2 si terminus de la ligne
 	public:
 		Station() {
 			std::cout<<"Nouvelle Station"<<std::endl;
 		}
-		Station(const std::string& nom_, const float& DistanceDA_) : nom(nom_), DistanceDA(DistanceDA_){
+		Station(const std::string& nom_, const float& DistanceDA_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_){
 			std::cout<<"Station "<<nom<<std::endl;
+			Depart = depart;
 		}
 		~Station(){
 			std::cout<<"Fin Station"<<std::endl;
@@ -92,6 +94,15 @@ class Station {
 		}
 		float getTempsarretsec() const{
 			return Tempsarretsec;
+		}
+		int getDepart() const{
+			return Depart;
+		}
+		void setDepart(const int& Depart_){
+			Depart = Depart_;
+		}
+		void setDistanceDA(const double& DistanceDA_){
+			DistanceDA = DistanceDA_;
 		}
 };
 
