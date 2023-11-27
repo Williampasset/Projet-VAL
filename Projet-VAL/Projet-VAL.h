@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 class Rame {
 private:
@@ -8,11 +10,12 @@ private:
 	int nbpassager = 0;
 	double v = 0;//vitesse actuelle
 	double distanceDA = 1;
+	bool urgence = false;
 	//pas modifiable 
 	float distanceAcc = 200;
 	float distanceDec = 200;
 	float distanceFreinage = 50;
-	float distanceSecurite = 1000;
+	float distanceSecurite = 400;
 	double vmax = 16.6;//vitesse max
 	int nbpassagermax = 10;
 public:
@@ -48,6 +51,12 @@ public:
 	}
 	double getDistanceDArame() const{
 		return distanceDA;
+	}
+	bool getUrgence() const{
+		return urgence;
+	}
+	void setUrgence(const bool& urgence_){
+		urgence = urgence_;
 	}
 };
 
@@ -106,8 +115,51 @@ class Station {
 		}
 };
 
-//class Superviseur {
-//	private : 
-	
-//	public: 
-//};
+class Superviseur {
+private:
+	std::vector<Rame> rames;
+
+public:
+	Superviseur() {
+		rames.push_back(Rame());
+		std::cout << "Nouveau Superviseur" << std::endl;
+	}
+	Superviseur(const std::vector<Rame>& rames_) : rames(rames_) {
+		std::cout << "Superviseur" << std::endl;
+	}
+
+	~Superviseur() {
+		std::cout << "Fin Superviseur" << std::endl;
+	}
+
+	// void addRame(const Rame& rame) {
+	// 	rames.push_back(rame);
+	// }
+
+	/*void removeRame(const Rame& rame) { Implémenter opérateur == dans la classe Rame
+		rames.erase(std::remove(rames.begin(), rames.end(), rame), rames.end());
+	}*/
+
+	// int getNbRame() const {
+	// 	return rames.size();
+	// }
+
+	// void setNbRame(const int& nb) {
+	// 	rames.resize(nb);
+	// }
+
+	Rame getRame(const int& id) const {
+		if (id >= 1 && id <= rames.size()) {
+			return rames[id - 1];
+		}
+		else{
+			return 0;
+		}
+	}
+
+	void arretUrgence(const int& id) {
+		if (id >= 0 && id < rames.size()) {
+			rames[id].setUrgence(true);
+		}
+	}
+};
