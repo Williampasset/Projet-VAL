@@ -58,7 +58,7 @@ void avancer(Rame& rame, Station& station) {
 			rame.setV(16.6);
 		}		
 	}
-	cout<<"Arrêt station"<<endl;
+	cout<<"Arret station"<<endl;
 	station.setEtatMA(false);
 }
 
@@ -111,20 +111,23 @@ void arret(Rame& rame, Station& station){
 void fonctionnement(std::stop_token stop_token, Rame rame, vector<Station> station){
 	int i = 0;
 	while(!stop_token.stop_requested()){
-		cout<<station.at(i).getNom()<<endl;
-		if(station.at(i).getEtatMA()){
-			avancer(rame, station.at(i + 1));
-			i++;
-		}
-		else{
-			arret(rame, station.at(i));
-		}
+		//cout<<station.at(i).getNom()<<endl;
 		if(i == station.size() - 1){//condition pour la boucle avec les stations
+			arret(rame, station.at(i));
 			i = 0;
 			avancer(rame, station.at(i));
 			rame.setDistanceDA(1);
 			station.at(i).setDistanceDA(0);
 		}
+		else{
+			if(station.at(i).getEtatMA()){
+				avancer(rame, station.at(i + 1));
+				i++;
+			}
+			else{
+				arret(rame, station.at(i));
+			}
+		}		
 	}
 }
 
