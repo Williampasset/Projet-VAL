@@ -1,9 +1,13 @@
 ﻿// Projet-VAL.cpp : définit le point d'entrée de l'application.
 //
 
-#include "Projet-VAL.h"
+//#include "Projet-VAL.h"
+#include "Rame.h"
+#include "Station.h"
+#include "Superviseur.h"
 #include "vector"
 #include "algorithm"
+#include <iostream>
 #include <thread>
 #include <chrono>
 #include <cstdlib>
@@ -21,19 +25,21 @@ void passager(vector<Station>& station){
 	}
 }
 
-void avancer(Rame& rame, Station& station) {
+void avancer(Rame& rame, Station& station, Superviseur Super) {
 	auto distance = rame.getDistanceDArame(); //distance de la rame par rapport au départ, variable incrémenter pour calculer la distance en permanence
 	auto distanceArret = distance; //distance de la rame à la station d'arrêt, i.e. la station précédente
 	cout<<"Station:"<<station.getNom()<<endl;//affichage de la station suivante, la station où on va 
-	auto i = 1.;
-	auto j = 0.;
-	auto k = 1.;
 	while((rame.getDistanceDArame() < station.getDistanceDAstation() - 1) || rame.getDistanceDArame()>station.getDistanceDAstation() + 1){//On avance jusqu'à la station suivante ou on démarre si c'est la station de départ
 		//Si on boucle et qu'on veut revenir au départ :
 		if(rame.getDistanceDArame()>station.getDistanceDAstation()){
 			station.setDistanceDA(distanceArret + 300);//on met la distance de la station de départ à 300m de la station d'arrêt
 		}
-		this_thread::sleep_for(1s);//Test pour voir si on peut mettre la même durée à tous les cas
+		if(rame.distanceToNextRame(Super.getRame(rame.getId()-1)) < 300 && station.getDepart()==1){//Si on est à moins de 400m de la rame précédente, on s'arrête
+			this_thread::sleep_for(100ms); 
+			distance += 16.6 + (0.083)*(station.getDistanceDAstation() - 200 - distance);
+			cout << "distance rame deceleration :  " << distance << endl;
+			rame.setV((0.083)*(station.getDistanceDAstation() - 200 - distance));
+		}
 		//Si on est en urgence :
 		// if(rame.getUrgence()){
 		// 	auto distanceUrgence = rame.getDistanceDArame();//Distance de la rame quand on appuie sur le bouton d'urgence
@@ -41,35 +47,31 @@ void avancer(Rame& rame, Station& station) {
 		// 	cout << "distance rame deceleration Urgence:  " << distance << endl;
 		// 	rame.setV(16.6 + (4*0.083)*((distanceUrgence + 50) - distance));
 		// }
-		if (rame.getDistanceDArame()<=97.468 || rame.getV()==0) {//démarrage quand on est au départ //TEST
-			distance = 1.4*(i*i)/2;
-			cout << "distance rame demarrage :  " << distance << endl;
-			rame.setV((1.4) * (i));
-			cout << "vitesse rame demerrage :  " << rame.getV() << endl;
-			i++;
-			k=i;
+		if (distance < 200) {//démarrage quand on est au départ 
+			this_thread::sleep_for(100ms);
+			distance += (0.083) * (distance);
+			cout << "distance rame demarage :  " << distance << endl;
+			rame.setV((0.083) * (distance));//Mauvais calcul de la vitesse
 		}
-		// else if () {//démarage quand on n'est pas au départ 
-		// 	distance += (1.4) * (distance);
-		// 	cout << "distance rame demarage :  " << distance << endl;
-		// 	rame.setV((1.4) * i);
-		// }
-		else if(station.getDistanceDAstation() - distance <= 97.468){//décélération normale  
-			distance =  (1.4)*((j+k)*(j+k))/2;
+		else if (distance <  distanceArret + 200) {//démarage quand on n'est pas au départ 
+			this_thread::sleep_for(100ms);
+			distance += (0.083) * (distance - distanceArret+1);
+			cout << "distance rame demarage :  " << distance << endl;
+			rame.setV((0.083) * (distance - distanceArret));
+		}
+		else if(station.getDistanceDAstation() - distance <= 200){//décélération normale 
+			this_thread::sleep_for(100ms); 
+			distance += 16.6 + (0.083)*(station.getDistanceDAstation() - 200 - distance);
 			cout << "distance rame deceleration :  " << distance << endl;
-			rame.setV(16.6 - (1.4)*(k - j));
-			cout << "vitesse rame deceleration :  " << rame.getV() << endl;
-			j++;
+			rame.setV((0.083)*(station.getDistanceDAstation() - 200 - distance));
 		}
 		else{
-			distance = 1.4*(k*k)/2;
+			this_thread::sleep_for(1s);
+			distance += 16.6;
 			cout << "distance rame constant :  " << distance << endl;
 			rame.setV(16.6);
-			cout << "vitesse rame constant :  " << rame.getV() << endl;
-			k++;
 		}
 		rame.setDistanceDA(distance);//Test pour voir si on peut set ce paramètre à la fin de tous les cas
-		cout << "distance rame :  " << rame.getDistanceDArame() << endl;
 	}
 	cout<<"Arret station"<<endl;
 	station.setEtatMA(false);
@@ -119,13 +121,19 @@ void arret(Rame& rame, Station& station, Superviseur Super) {
 		this_thread::sleep_for(3s);
 	}
 	if (rame.getId() != 1){
-		while(Super.getRame(rame.getId()-1).getDistanceDArame() - rame.getDistanceDArame() < 1000){
+		while(Super.getRame(rame.getId()-1).getDistanceDArame() - rame.getDistanceDArame() < 400){
 			cout<<Super.getRame(rame.getId()-1).getDistanceDArame()<<endl;
 			this_thread::sleep_for(3s); 
 		}
+		if(rame.distanceToNextRame(Super.getRame(rame.getId()-1)) > 300){
+			station.setEtatMA(true);
+		}
+	}
+	else{
+		station.setEtatMA(true);
 	}
 	this_thread::sleep_for(3s);
-	station.setEtatMA(true);
+	
 	cout<<"Nombre de passager rame "<<rame.getId()<<": "<< rame.getNbpassager()<<endl;
 	cout<<"Nombre de passager station: "<<station.getNbpassager()<<endl;
 }
@@ -137,16 +145,17 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station> station, 
 		if(i == station.size() - 1){//condition pour la boucle avec les stations
 			arret(ref(rame), station.at(i), Super);
 			i = 0;
-			avancer(ref(rame), station.at(i));
+			avancer(ref(rame), station.at(i), Super);
 			rame.setDistanceDA(1);
 			station.at(i).setDistanceDA(0);
 		}
 		else{
-			if(station.at(i).getEtatMA() && i<station.size() - 2){
-				avancer(ref(rame), station.at(i + 1));
+			if(station.at(i).getEtatMA() && i<station.size() - 1){
+				avancer(ref(rame), station.at(i + 1), Super);
 				i++;
 			}
 			else{
+				cout<<"Arret station dans boucle while"<<endl;
 				arret(ref(rame), station.at(i), Super);
 			}
 		}		
@@ -196,10 +205,9 @@ int main()
 	auto distance = Super.getRame(rames.at()).getDistanceDArame();
 	cout <<"distance de la rame : " << distance << endl;*/
 
-	std::jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,stations, Super);
-	/*std::jthread thr2(fonctionnement, s_source.get_token(), rames.at(1), stations, Super);*/
-
-	// std::jthread thr2(arret,rame, station1);
+	jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,stations, Super);
+	jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), stations, Super);
+	
 	
 
 	return 0;
