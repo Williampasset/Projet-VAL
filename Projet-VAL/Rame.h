@@ -39,4 +39,8 @@ public:
 	double distanceToNextRame(const Rame& otherrame);
 	void setDistanceTotal(const double& distance);
 	double getDistanceTotal() const;
+    void Avancer(Station& NextStation);
+    void Arreter(Station& NextStation);
+    //void Freiner(Station& NextStation);//à voir
+    
 };
