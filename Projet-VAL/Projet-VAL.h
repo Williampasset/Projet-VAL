@@ -4,12 +4,15 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 class Rame {
 private:
 	const int id = 0;
 	int nbpassager = 0;
 	double v = 0;//vitesse actuelle
 	double distanceDA = 1;
+	double distanceTotal = 1;
 	bool urgence = false;
 	//pas modifiable 
 	float distanceAcc = 200;
@@ -20,13 +23,13 @@ private:
 	int nbpassagermax = 10;
 public:
 	Rame(){
-		std::cout<<"Nouvelle Rame"<<std::endl;
+		cout<<"Nouvelle Rame"<<endl;
 	}
 	Rame(const int& id_) : id(id_){
-		std::cout<<"Rame "<<id<<std::endl;
+		cout<<"Rame "<<id<<endl;
 	}
 	~Rame(){
-		std::cout<<"Fin Rame"<<std::endl;
+		cout<<"Fin Rame"<<endl;
 	}
 	void setV(const double& v_){
 		v = v_;
@@ -58,12 +61,21 @@ public:
 	void setUrgence(const bool& urgence_){
 		urgence = urgence_;
 	}
+	// double distanceToNextRame(const Rame& otherrame){
+	// 	return otherrame.distanceTotal - distanceTotal;
+	// }
+	// void setDistanceTotal(const double& distance){
+	// 	distanceTotal = distance;
+	// }
+	// double getDistanceTotal(const double& distance){
+	// 	return distanceTotal;
+	// }
 };
 
 class Station {
 	private : 
 		int Nbpersonne = 0; 
-		const std::string nom; 
+		const string nom; 
 		double DistanceDA=0; 
 		bool etatMA = false;
 		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
@@ -113,23 +125,25 @@ class Station {
 		void setDistanceDA(const double& DistanceDA_){
 			DistanceDA = DistanceDA_;
 		}
+		void randPassager(){
+			Nbpersonne = rand() % 10-Nbpersonne + 1;
+		}
 };
 
 class Superviseur {
 private:
-	std::vector<Rame> rames;
+	vector<Rame> &rames;
 
 public:
-	Superviseur() {
-		rames.push_back(Rame());
-		std::cout << "Nouveau Superviseur" << std::endl;
-	}
-	Superviseur(const std::vector<Rame>& rames_) : rames(rames_) {
-		std::cout << "Superviseur" << std::endl;
+	//Superviseur(){
+	//	cout << "Nouveau Superviseur" << endl;
+	//}
+	Superviseur(vector<Rame>& rames_) : rames(rames_) {
+		cout << "Superviseur" << endl;
 	}
 
 	~Superviseur() {
-		std::cout << "Fin Superviseur" << std::endl;
+		cout << "Fin Superviseur" << endl;
 	}
 
 	// void addRame(const Rame& rame) {

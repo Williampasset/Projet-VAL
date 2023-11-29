@@ -10,7 +10,7 @@
 #include <ctime>
 
 using namespace std;
-
+//Initialisation des passagers au départ --> à revoir
 void passager(vector<Station>& station){
 	for(auto i = 0; i<station.size(); i++){
 		if(station.at(i).getDepart() != 2){
@@ -22,49 +22,54 @@ void passager(vector<Station>& station){
 }
 
 void avancer(Rame& rame, Station& station) {
-	auto distance=rame.getDistanceDArame(); 
-	auto distanceArret = rame.getDistanceDArame();
-	cout<<"Station:"<<station.getNom()<<endl;
-	while((rame.getDistanceDArame() < station.getDistanceDAstation() - 1) || rame.getDistanceDArame()>station.getDistanceDAstation() + 1){
+	auto distance = rame.getDistanceDArame(); //distance de la rame par rapport au départ, variable incrémenter pour calculer la distance en permanence
+	auto distanceArret = distance; //distance de la rame à la station d'arrêt, i.e. la station précédente
+	cout<<"Station:"<<station.getNom()<<endl;//affichage de la station suivante, la station où on va 
+	auto i = 1.;
+	auto j = 0.;
+	auto k = 1.;
+	while((rame.getDistanceDArame() < station.getDistanceDAstation() - 1) || rame.getDistanceDArame()>station.getDistanceDAstation() + 1){//On avance jusqu'à la station suivante ou on démarre si c'est la station de départ
+		//Si on boucle et qu'on veut revenir au départ :
 		if(rame.getDistanceDArame()>station.getDistanceDAstation()){
-			station.setDistanceDA(distanceArret + 300);
+			station.setDistanceDA(distanceArret + 300);//on met la distance de la station de départ à 300m de la station d'arrêt
 		}
-		if(rame.getUrgence()){
-			auto distanceUrgence = rame.getDistanceDArame();
-			std::this_thread::sleep_for(100ms);// arret urgence 
-			distance += 16.6 + (4*0.083)*((distanceUrgence + 50) - distance);
-			rame.setDistanceDA(distance);
-			std::cout << "distance rame deceleration Urgence:  " << distance << std::endl;
-			rame.setV(16.6 + (4*0.083)*((distanceUrgence + 50) - distance));
+		this_thread::sleep_for(1s);//Test pour voir si on peut mettre la même durée à tous les cas
+		//Si on est en urgence :
+		// if(rame.getUrgence()){
+		// 	auto distanceUrgence = rame.getDistanceDArame();//Distance de la rame quand on appuie sur le bouton d'urgence
+		// 	distance += 1.66 + (4*0.083)*((distanceUrgence + 50) - distance);//On décelerre pour s'arrêter à 50m de la station d'arrêt
+		// 	cout << "distance rame deceleration Urgence:  " << distance << endl;
+		// 	rame.setV(16.6 + (4*0.083)*((distanceUrgence + 50) - distance));
+		// }
+		if (rame.getDistanceDArame()<=97.468 || rame.getV()==0) {//démarrage quand on est au départ //TEST
+			distance = 1.4*(i*i)/2;
+			cout << "distance rame demarrage :  " << distance << endl;
+			rame.setV((1.4) * (i));
+			cout << "vitesse rame demerrage :  " << rame.getV() << endl;
+			i++;
+			k=i;
 		}
-		if (distance < 200) {//démarrage quand on est au départ 
-			std::this_thread::sleep_for(100ms);
-			distance += (0.083) * (distance);
-			rame.setDistanceDA(distance);
-			std::cout << "distance rame demarage :  " << distance << std::endl;
-			rame.setV((0.083) * (distance));
-		}
-		else if (distance <  distanceArret + 200) {//démarage quand on n'est pas au départ 
-			std::this_thread::sleep_for(100ms);
-			distance += (0.083) * (distance - distanceArret+1);
-			rame.setDistanceDA(distance);
-			std::cout << "distance rame demarage :  " << distance << std::endl;
-			rame.setV((0.083) * (distance - distanceArret));
-		}
-		else if(station.getDistanceDAstation() - distance <= 200){//décélération normale  
-			std::this_thread::sleep_for(100ms);
-			distance += 16.6 + (0.083)*(station.getDistanceDAstation() - 200 - distance);
-			rame.setDistanceDA(distance);
-			std::cout << "distance rame deceleration :  " << distance << std::endl;
-			rame.setV(16.6 + (0.083)*(station.getDistanceDAstation() - 200 - distance));
+		// else if () {//démarage quand on n'est pas au départ 
+		// 	distance += (1.4) * (distance);
+		// 	cout << "distance rame demarage :  " << distance << endl;
+		// 	rame.setV((1.4) * i);
+		// }
+		else if(station.getDistanceDAstation() - distance <= 97.468){//décélération normale  
+			distance =  (1.4)*((j+k)*(j+k))/2;
+			cout << "distance rame deceleration :  " << distance << endl;
+			rame.setV(16.6 - (1.4)*(k - j));
+			cout << "vitesse rame deceleration :  " << rame.getV() << endl;
+			j++;
 		}
 		else{
-			std::this_thread::sleep_for(1s);
-			distance += 16.6;
-			rame.setDistanceDA(distance);
-			std::cout << "distance rame constant :  " << distance << std::endl;
+			distance = 1.4*(k*k)/2;
+			cout << "distance rame constant :  " << distance << endl;
 			rame.setV(16.6);
+			cout << "vitesse rame constant :  " << rame.getV() << endl;
+			k++;
 		}
+		rame.setDistanceDA(distance);//Test pour voir si on peut set ce paramètre à la fin de tous les cas
+		cout << "distance rame :  " << rame.getDistanceDArame() << endl;
 	}
 	cout<<"Arret station"<<endl;
 	station.setEtatMA(false);
@@ -78,24 +83,24 @@ void arret(Rame& rame, Station& station, Superviseur Super) {
 		}
 		cout << "Nombre de personne qui sortent: " << n << endl;
 		for (auto i = 0; i < n; i++) {
-			std::this_thread::sleep_for(0.5s);
+			this_thread::sleep_for(0.5s);
 		}
 		rame.setNbpassager(rame.getNbpassager() - n);
 		if (station.getNbpassager() >= (10 - rame.getNbpassager())) {
-			auto k = 10 - rame.getNbpassager();
+			n = 10 - rame.getNbpassager();
 			station.setNbpassager(station.getNbpassager() - (10 - rame.getNbpassager()));
-			for (auto i = 0; i < k; i++) {
-				std::this_thread::sleep_for(0.5s);
+			for (auto i = 0; i < n; i++) {
+				this_thread::sleep_for(0.5s);
 			}
 			cout << "If" << endl;
 			cout << "Nombre de personne qui rentrent: " << (10 - rame.getNbpassager()) << endl;
 			rame.setNbpassager(10);
 		}
 		else {
-			auto j = station.getNbpassager();
+			n = station.getNbpassager();
 			rame.setNbpassager(rame.getNbpassager() + station.getNbpassager());
-			for (auto i = 0; i < j; i++) {
-				std::this_thread::sleep_for(0.5s);
+			for (auto i = 0; i < n; i++) {
+				this_thread::sleep_for(0.5s);
 			}
 			cout << "Nombre de personne qui rentrent: " << station.getNbpassager() << endl;
 			station.setNbpassager(0);
@@ -105,26 +110,27 @@ void arret(Rame& rame, Station& station, Superviseur Super) {
 		if (station.getDepart() == 2) {
 			cout << "Nombre de personne qui sortent: " << rame.getNbpassager() << endl;
 			for (auto i = 0; i < rame.getNbpassager(); i++) {
-				std::this_thread::sleep_for(0.5s);
+				this_thread::sleep_for(0.5s);
 			}
 			rame.setNbpassager(0);
 		}
 	}
 	while (rame.getUrgence()) {
-		std::this_thread::sleep_for(3s);
+		this_thread::sleep_for(3s);
 	}
 	if (rame.getId() != 1){
 		while(Super.getRame(rame.getId()-1).getDistanceDArame() - rame.getDistanceDArame() < 1000){
-			std::this_thread::sleep_for(3s); 
+			cout<<Super.getRame(rame.getId()-1).getDistanceDArame()<<endl;
+			this_thread::sleep_for(3s); 
 		}
 	}
-	std::this_thread::sleep_for(3s);
+	this_thread::sleep_for(3s);
 	station.setEtatMA(true);
-	cout<<"Nombre de passager rame: "<<rame.getNbpassager()<<endl;
+	cout<<"Nombre de passager rame "<<rame.getId()<<": "<< rame.getNbpassager()<<endl;
 	cout<<"Nombre de passager station: "<<station.getNbpassager()<<endl;
 }
 
-void fonctionnement(std::stop_token stop_token, Rame& rame, vector<Station> station, Superviseur Super){
+void fonctionnement(stop_token stop_token, Rame& rame, vector<Station> station, Superviseur Super){
 	int i = 0;
 	while(!stop_token.stop_requested()){
 		//cout<<station.at(i).getNom()<<endl;
@@ -150,15 +156,18 @@ void fonctionnement(std::stop_token stop_token, Rame& rame, vector<Station> stat
 int main()
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
+	//Initialisation des rames et des stations :
 	vector<Rame> rames;
 	vector<Station> stations; 
 	//création des rames : 
 	Rame rame0(1);
 	Rame rame1(2);
 	//Rame rame2(3);
+	//Ajout des rames au vecteur de rames :
 	rames.push_back(rame0); 
 	rames.push_back(rame1);
 	//rames.push_back(rame2);
+
 	//création des stations : 
 	Station station0("Depart1", 0, 1); 
 	Station station1("bois blanc", 500, 0);
@@ -179,12 +188,17 @@ int main()
 	Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
 	passager(stations);
-	std::stop_source s_source;
-	// if(station1.getEtatMA()){
-	// 	
-	// }
-	std::jthread thr1(fonctionnement, s_source.get_token(), ref(rame0), stations, Super);
-	/*std::jthread thr2(fonctionnement, s_source.get_token(), ref(rame1), stations, Super);*/
+	stop_source s_source;
+	
+	/*rames.at(0).setDistanceDA(13);
+	
+	cout << "distance de la rame : " << rame0.getDistanceDArame() << endl;
+	auto distance = Super.getRame(rames.at()).getDistanceDArame();
+	cout <<"distance de la rame : " << distance << endl;*/
+
+	std::jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,stations, Super);
+	/*std::jthread thr2(fonctionnement, s_source.get_token(), rames.at(1), stations, Super);*/
+
 	// std::jthread thr2(arret,rame, station1);
 	
 
