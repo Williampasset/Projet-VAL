@@ -1,14 +1,14 @@
 #include "Station.h"
 using namespace std;
 Station::Station() {
-    cout<<"Nouvelle Station"<<endl;
+    //cout<<"Nouvelle Station"<<endl;
 }
 Station::Station(const string& nom_, const float& DistanceDA_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_){
-    cout<<"Station "<<nom<<endl;
+    //cout<<"Station "<<nom<<endl;
     Depart = depart;
 }
 Station::~Station(){
-    cout<<"Fin Station"<<endl;
+    //cout<<"Fin Station"<<endl;
 }
 void Station::setNbpassager(const int& Nbpersonne_){
     Nbpersonne = Nbpersonne_;
@@ -44,5 +44,8 @@ void Station::setDistanceDA(const double& DistanceDA_){
     DistanceDA = DistanceDA_;
 }
 void Station::randPassager(){
-    Nbpersonne = rand() % 10-Nbpersonne + 1;
+    if (getNbpassager() < 10) {
+        int randToAdd = rand() % (10 - getNbpassager());
+        Nbpersonne += randToAdd;
+    }
 }
