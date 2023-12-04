@@ -14,7 +14,7 @@ private:
 	int nbpassager = 0;
 	double v = 0;//vitesse actuelle
 	double distanceOldStation = 1;
-	double distanceTotal = 1;
+	double distanceTotal = 0;
 	bool urgence = false;
 	int direction = 1;
 	//pas modifiable 
@@ -43,6 +43,8 @@ public:
 	double getDistanceTotal() const;
     void Avancer(Station& NextStation);
     void Arreter(Station& StopStation);
+	void setDirection(const int& direction_);
+	int getDirection();
     //void Freiner(Station& NextStation);//à voir
     
 };

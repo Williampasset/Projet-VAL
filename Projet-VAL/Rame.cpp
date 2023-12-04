@@ -56,23 +56,23 @@ void Rame::Avancer(Station& nextStation) {
 	double distanceacc = 0;
 	double distanceconst = 0;
 	double distancedec = 0;
-    while (abs(distance - nextStation.getDistanceDAstation()) >= 1 || nextStation.getDepart() == 1) {
+    while (abs(distance - (nextStation.getDistanceBefStation())) > 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) > 1) ) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
-		if (getV() < 16.6 && nextStation.getDistanceDAstation() - distance > 100) {//démarrage quand on est au départ 
+		if (getV() < 16.6 && (nextStation.getDistanceBefStation()) - distance > 100) {//démarrage quand on est au départ 
 			if (distanceacc == 0) {
 				time = 0.1;
 			}
-			distanceacc = ((1.4) * (time*time) * 0.5) + distancedec + distanceconst;
+			distanceacc = (((1.4) * (time*time) * 0.5) + distancedec + distanceconst);
 			cout << "distance rame demarrage :  " << distanceacc << endl;
 			distance = distanceacc;
 			setV((1.4) * (time));
 		}
-		else if (nextStation.getDistanceDAstation() - distance < 100) {//décélération normale
+		else if ((nextStation.getDistanceBefStation()) - distance < 100) {//décélération normale
 			if (distancedec == 0) {
 				time = 0.1;
 			}
-			distancedec = (16.6 * time - (1.4 * (time * time) * 0.5)) + distanceconst;
+			distancedec = ((16.6 * time - (1.4 * (time * time) * 0.5)) + distanceconst);
 			cout << "distance rame deceleration :  " << distancedec << endl;
 			distance = distancedec;
 			setV(16.6 - (1.4*time));
@@ -81,7 +81,7 @@ void Rame::Avancer(Station& nextStation) {
 			if (distanceconst == 0) {
 				time = 0.1;
 			}
-			distanceconst = (16.6 * time) + distanceacc + distancedec;
+			distanceconst = ((16.6 * time) + distanceacc + distancedec);
 			cout << "distance rame constant :  " << distanceconst << endl;
 			distance = distanceconst;
 			setV(16.6);
@@ -149,4 +149,11 @@ void Rame::Arreter(Station& StopStation) {
 
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station"<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
+}
+
+void Rame::setDirection(const int& direction_) {
+	direction = direction_;
+}
+int Rame::getDirection() {
+	return direction;
 }

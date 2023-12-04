@@ -11,15 +11,18 @@ using namespace std;
 class Station {
 	private : 
 		int Nbpersonne = 0; 
-		const string nom; 
-		double DistanceDA=0; 
+		string nom;
+		double DistanceDA=0;
+		double distanceBefStation = 0;
 		bool etatMA = false;
-		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
-		float Tempsarretsec = 3; 
 		int Depart = 0; //0 si non, 1 si oui, 2 si terminus de la ligne
+		//non modifiable
+		float Tempspassager = 0.5; //il faut l'ajouter à Tempsarretsec à chaque fois 
+		float Tempsarretsec = 3;
 	public:
 		Station();
-		Station(const std::string& nom_, const float& DistanceDA_, const int& depart);
+		Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart);
+		Station(const Station& station);
 		~Station();
 		void setNbpassager(const int& Nbpersonne_);
 		void setEtatMA(const bool& etatMA_);
@@ -33,4 +36,7 @@ class Station {
 		void setDepart(const int& Depart_);
 		void setDistanceDA(const double& DistanceDA_);
 		void randPassager();
+		void setDistanceBefStation(const double& distanceBefStation_);
+		double getDistanceBefStation() const;
+
 };

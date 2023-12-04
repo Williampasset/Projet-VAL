@@ -3,9 +3,16 @@ using namespace std;
 Station::Station() {
     //cout<<"Nouvelle Station"<<endl;
 }
-Station::Station(const string& nom_, const float& DistanceDA_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_){
+Station::Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_){
     //cout<<"Station "<<nom<<endl;
     Depart = depart;
+}
+Station::Station(const Station& station) {
+    Nbpersonne = station.getNbpassager();
+    nom = station.getNom();
+    DistanceDA = station.getDistanceDAstation();
+    Depart = station.getDepart();
+    distanceBefStation = station.getDistanceBefStation();
 }
 Station::~Station(){
     //cout<<"Fin Station"<<endl;
@@ -48,4 +55,10 @@ void Station::randPassager(){
         int randToAdd = rand() % (10 - getNbpassager());
         Nbpersonne += randToAdd;
     }
+}
+void Station::setDistanceBefStation(const double& distanceBefStation_) {
+    distanceBefStation = distanceBefStation_;
+}
+double Station::getDistanceBefStation() const{
+    return distanceBefStation;
 }
