@@ -17,4 +17,4 @@ SET(INTEL_COMPILER_LIB "${INTEL}/compiler/latest/windows/compiler/lib/intel64")
 SET(MKL_DIR "${INTEL}/mkl/latest/lib/cmake/mkl")
 
 
-add_executable (Projet-VAL "Projet-VAL.cpp" "Projet-VAL.h" "Rame.cpp" "Rame.h" "Station.h" "Station.cpp" "Superviseur.h" "Superviseur.cpp"  )
+add_executable (Projet-VAL "Projet-VAL.cpp" "Projet-VAL.h" "Rame.cpp" "Rame.h" "Station.h" "Station.cpp" "Superviseur.h" "Superviseur.cpp"   "SFML.cpp")
