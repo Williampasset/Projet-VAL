@@ -14,6 +14,7 @@ class Station {
 		string nom;
 		double DistanceDA=0;
 		double distanceBefStation = 0;
+		double distanceAftStation = 0;
 		bool etatMA = false;
 		int Depart = 0; //0 si non, 1 si oui, 2 si terminus de la ligne
 		//non modifiable
@@ -21,7 +22,7 @@ class Station {
 		float Tempsarretsec = 3;
 	public:
 		Station();
-		Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart);
+		Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const double& distanceAftStation_, const int& depart);
 		Station(const Station& station);
 		~Station();
 		void setNbpassager(const int& Nbpersonne_);
@@ -38,5 +39,7 @@ class Station {
 		void randPassager();
 		void setDistanceBefStation(const double& distanceBefStation_);
 		double getDistanceBefStation() const;
+		void setDistanceAftStation(const double& distanceAftStation_);
+		double getDistanceAftStation() const;
 
 };

@@ -17,11 +17,18 @@
 using namespace std;
 
 void fonctionnement(stop_token stop_token, Rame& rame, vector<Station> station) {
-	vector<Station>::iterator it = station.begin();
+	vector<Station> NewStation(station);
+	vector<Station>::iterator it = NewStation.begin();
 	while (!stop_token.stop_requested()) {
-		if ((it == station.end() && rame.getDirection() == 1) || (it == station.begin() && rame.getDirection() == -1)) {//condition pour la boucle avec les stations
+		if ((it == NewStation.end() - 1 && rame.getDirection() == 1) || (it == NewStation.begin() && rame.getDirection() == -1)) {//condition pour la boucle avec les stations
 			rame.Arreter(*it);
+			NewStation.back().setDepart(NewStation.back().getDepart() != 1 ? 1 : 2);
+			cout << "Dernière station: " << NewStation.back().getDepart() << endl;
+			NewStation.front().setDepart(NewStation.front().getDepart() != 2 ? 2 : 1);
+			cout << "Première station: " << NewStation.front().getDepart() << endl;
 			rame.setDirection((-1) * rame.getDirection());
+			it->setEtatMA(false);
+			cout << "Direction de la rame: " << rame.getDirection() << endl;
 			this_thread::sleep_for(5s);
 		}
 		else {
@@ -61,23 +68,15 @@ int main()
 	//rames.push_back(rame2);
 
 	//création des stations : 
-	Station station0("Bois Rouge", 0, 0, 1); 
-	Station station1("Bois Blanc", 500, 500, 0);
-	Station station2("Republique", 900, 400, 0);
-	Station station3("Jeremy", 1300, 400, 2);
-	/*Station station4("Départ 2", 1550, 1);
-	Station station5("Republique 2", 2050, 0);
-	Station station6("bois blanc 2", 2450, 0);
-	Station station7("Terminus 2", 2850, 2);*/
+	Station station0("Bois Rouge", 0, 500, 500, 1);
+	Station station1("Bois Blanc", 500, 500, 400, 0);
+	Station station2("Republique", 900, 400, 400, 0);
+	Station station3("Jeremy", 1300, 400, 400, 2);
 	stations.push_back(station0);
 	stations.push_back(station1);
 	stations.push_back(station2);
 	stations.push_back(station3);
-	/*stations.push_back(station4);
-	stations.push_back(station5);
-	stations.push_back(station6);
-	stations.push_back(station7);*/
-	Superviseur Super(rames); 
+	//Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
 	for (auto& i : stations) i.randPassager();
 	stop_source s_source;

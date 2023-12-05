@@ -3,7 +3,7 @@ using namespace std;
 Station::Station() {
     //cout<<"Nouvelle Station"<<endl;
 }
-Station::Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_){
+Station::Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const double& distanceAftStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_), distanceAftStation(distanceAftStation_) {
     //cout<<"Station "<<nom<<endl;
     Depart = depart;
 }
@@ -45,13 +45,18 @@ int Station::getDepart() const{
     return Depart;
 }
 void Station::setDepart(const int& Depart_){
-    Depart = Depart_;
+    if (Depart_ >= 0 && Depart_ <= 2) {
+        Depart = Depart_;
+    }
+    else {
+        Depart = 0;
+    }
 }
 void Station::setDistanceDA(const double& DistanceDA_){
     DistanceDA = DistanceDA_;
 }
 void Station::randPassager(){
-    if (getNbpassager() < 10) {
+    if (getNbpassager() < 10 && getDepart() != 2 ) {
         int randToAdd = rand() % (10 - getNbpassager());
         Nbpersonne += randToAdd;
     }
@@ -61,4 +66,10 @@ void Station::setDistanceBefStation(const double& distanceBefStation_) {
 }
 double Station::getDistanceBefStation() const{
     return distanceBefStation;
+}
+void Station::setDistanceAftStation(const double& distanceAftStation_) {
+    distanceAftStation = distanceAftStation_;
+}
+double Station::getDistanceAftStation() const {
+    return distanceAftStation;
 }

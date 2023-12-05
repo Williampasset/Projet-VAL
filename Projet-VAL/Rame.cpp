@@ -56,7 +56,7 @@ void Rame::Avancer(Station& nextStation) {
 	double distanceacc = 0;
 	double distanceconst = 0;
 	double distancedec = 0;
-    while (abs(distance - (nextStation.getDistanceBefStation())) > 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) > 1) ) {
+    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1) ) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
 		if (getV() < 16.6 && (nextStation.getDistanceBefStation()) - distance > 100) {//démarrage quand on est au départ 
@@ -97,7 +97,7 @@ void Rame::Arreter(Station& StopStation) {
 	if (StopStation.getNbpassager() > 0) {
 		auto n = 0;
 		if (StopStation.getDepart() != 1) {
-			n = rand() % (getNbpassager());
+			n = rand() % (getNbpassager() + 1);
 		}
 		cout << "Nombre de personne qui sortent de la rame "<<getId()<<" : "<<  n << endl;
 		for (auto i = 0; i < n; i++) {
@@ -146,7 +146,7 @@ void Rame::Arreter(Station& StopStation) {
 	//}
 	this_thread::sleep_for(3s);
 	StopStation.setEtatMA(true);
-
+	StopStation.randPassager();
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station"<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
 }
