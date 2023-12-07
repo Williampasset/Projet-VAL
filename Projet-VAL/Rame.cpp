@@ -94,7 +94,7 @@ void Rame::Avancer(Station& nextStation) {
 	nextStation.setEtatMA(false);
 }
 void Rame::Arreter(Station& StopStation) {
-	if (StopStation.getNbpassager() > 0) {
+	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
 		auto n = 0;
 		if (StopStation.getDepart() != 1) {
 			n = rand() % (getNbpassager() + 1);
@@ -148,7 +148,12 @@ void Rame::Arreter(Station& StopStation) {
 	StopStation.setEtatMA(true);
 	StopStation.randPassager();
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
-	cout << "Nombre de passager station"<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
+	cout << "Nombre de passager station "<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
+	if (StopStation.getDepart() == 2) {
+		this_thread::sleep_for(5s);
+		cout << "Changement de voie de la rame " << getId() << endl;
+		StopStation.setEtatMA(false);
+	}
 }
 
 void Rame::setDirection(const int& direction_) {
