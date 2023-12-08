@@ -17,6 +17,7 @@ private:
 	double distanceTotal = 0;
 	bool urgence = false;
 	int direction = 1;
+	Rame* NextRame = nullptr;
 	//pas modifiable 
 	float distanceAcc = 200;
 	float distanceDec = 200;
@@ -27,6 +28,7 @@ private:
 public:
 	Rame();
 	Rame(const int& id_);
+	Rame(const int& id_, Rame* NextRame_);
 	~Rame();
 	void setV(const double& v_);
 	void setDistanceOldStation(const double& distanceDA_);
@@ -38,13 +40,11 @@ public:
 	double getDistanceOldStation() const;
 	bool getUrgence() const;
 	void setUrgence(const bool& urgence_);
-	double distanceToNextRame(const Rame& otherrame);
+	double distanceToNextRame();
 	void setDistanceTotal(const double& distance);
 	double getDistanceTotal() const;
     void Avancer(Station& NextStation);
     void Arreter(Station& StopStation);
 	void setDirection(const int& direction_);
 	int getDirection();
-    //void Freiner(Station& NextStation);//à voir
-    
 };
