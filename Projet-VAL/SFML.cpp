@@ -39,9 +39,10 @@ int main() {
         return EXIT_FAILURE; // On ferme le programme
     }
     backgroundSprite.setTexture(backgroundImage);
+   
     objetSprite.setTexture(objet);
     objetSprite.setScale(sf::Vector2f(0.5, 0.5));
-
+    Train train1(100, 100, 0, 1);
     // Création d'un point
     sf::CircleShape point(20.f);
     point.setFillColor(sf::Color::Red);
@@ -86,7 +87,10 @@ int main() {
         }
         else {
             direction /= distance; // Normalisation du vecteur direction
-            objetSprite.move(direction * 2.0f); // Vitesse de déplacement de l'objet
+            //objetSprite.move(direction * 2.0f); // Vitesse de déplacement de l'objet
+            train1.move(trajet[index+1]);
+            objetSprite.setPosition(train1.getX(), train1.getY()); // Vitesse de déplacement de l'objet
+
         }
 
         window.clear();

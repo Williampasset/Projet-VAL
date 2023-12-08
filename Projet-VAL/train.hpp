@@ -1,12 +1,18 @@
-
+#pragma once 
 #include <SFML/Graphics.hpp>
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include<vector>
+using namespace std;
+using namespace sf;
+
 
 class Train
 {
 private:
-	float x, y;
-	float angle;
-	float vitesse;
+	float _x, _y;
+	float _angle;
+	float _vitesse;
 public:
 	Train(float x, float y, float angle, float speed);
 
@@ -14,7 +20,7 @@ public:
 	float getY() const;
 	float getAngle() const;
 
-	void move();
+	void move(auto coordonne);
 
 	void turnLeft();
 	void turnRight();

@@ -17,4 +17,4 @@ find_package(SFML COMPONENTS window system graphics REQUIRED)
 link_libraries(sfml-graphics sfml-window)
 
 
-add_executable (Projet-VAL  "SFML.cpp")
+add_executable (Projet-VAL  "SFML.cpp" "train.cpp" "train.hpp" "station.cpp" "station.hpp")

@@ -1,7 +1,8 @@
 #include "train.hpp"
 
+
 Train::Train(float x, float y, float angle, float speed)
-    : _x(x), _y(y), _angle(angle), _speed(speed)
+    : _x(x), _y(y), _angle(angle), _vitesse(speed)
 {}
 
 float
@@ -23,10 +24,18 @@ Train::getAngle() const
 }
 
 void
-Train::move()
+Train::move(auto coordonne)
 {
-    _x += static_cast<float>(cos(_angle * M_PI / 180.0) * _speed);
-    _y += static_cast<float>(sin(_angle * M_PI / 180.0) * _speed);
+    auto x = getX();
+    auto y = getY();
+    auto x1 = coordonne[0]; 
+    auto y1= coordonne[1];
+    
+        auto xhyp = x1;
+        auto yhyp = y; 
+    auto angle= cos((xhyp-x)/() // calculer l'angle. 
+    _x += static_cast<float>(cos(_angle * 3.14 / 180.0) * _vitesse);
+    _y += static_cast<float>(sin(_angle * 3.14 / 180.0) * _vitesse);
 }
 
 void
@@ -44,15 +53,15 @@ Train::turnRight()
 void
 Train::speedUp()
 {
-    if (_speed < 3.f)
-        _speed += 0.05f;
+    if (_vitesse < 3.f)
+        _vitesse += 0.05f;
 }
 
 void
 Train::speedDown()
 {
-    if (_speed > 0.f)
-        _speed -= 0.05f;
+    if (_vitesse > 0.f)
+        _vitesse -= 0.05f;
     else
-        _speed = 0;
+        _vitesse = 0;
 }
