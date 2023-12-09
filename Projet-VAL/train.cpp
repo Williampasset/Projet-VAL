@@ -31,11 +31,13 @@ Train::move(auto coordonne)
     auto x1 = coordonne[0]; 
     auto y1= coordonne[1];
     
-        auto xhyp = x1;
-        auto yhyp = y; 
-    auto angle= cos((xhyp-x)/() // calculer l'angle. 
-    _x += static_cast<float>(cos(_angle * 3.14 / 180.0) * _vitesse);
-    _y += static_cast<float>(sin(_angle * 3.14 / 180.0) * _vitesse);
+    auto xhyp = x1;
+    auto yhyp = y;
+    auto coteadja = sqrt((xhyp - x) ^ 2 + (yhyp - y) ^ 2);
+    auto cotehypo = sqrt((x1-x)^2+(y1-y)^2);
+    auto angle = cos(coteadja / coteadja);  // calculer l'angle. 
+    _x += static_cast<float>(cos(angle * 3.14 / 180.0) * _vitesse);
+    _y += static_cast<float>(sin(angle * 3.14 / 180.0) * _vitesse);
 }
 
 void
