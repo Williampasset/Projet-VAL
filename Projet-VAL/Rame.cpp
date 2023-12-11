@@ -94,7 +94,7 @@ void Rame::Avancer(Station& nextStation) {
 		setDistanceTotal(distance + distanceTotActuel);
 		//cout << "Distance total de la rame "<<getId() << " : " << getDistanceTotal() << endl;
 	}
-	cout << "Arret station" << nextStation.getNom() << endl;
+	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
 	nextStation.setEtatMA(false);
 }
@@ -106,7 +106,7 @@ void Rame::Arreter(Station& StopStation) {
 	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
 		auto n = 0;
 		if (StopStation.getDepart() != 1) {
-			n = rand() % (getNbpassager() + 1) - 1;
+			n = rand() % (getNbpassager() + 1);
 		}
 		cout << "Nombre de personne qui sortent de la rame "<<getId()<<" : "<<  n << endl;
 		for (auto i = 0; i < n; i++) {
@@ -119,7 +119,7 @@ void Rame::Arreter(Station& StopStation) {
 			for (auto i = 0; i < n; i++) {
 				this_thread::sleep_for(0.5s);
 			}
-			cout << "Nombre de personne qui rentrent de la rame " << getId() << " : " << n << endl;
+			cout << "Nombre de personne qui rentrent dans la rame " << getId() << " : " << n << endl;
 			setNbpassager(10);
 		}
 		else {

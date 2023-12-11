@@ -23,19 +23,15 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 		if ((itStation == NewStation.end() - 1 && rame.getDirection() == 1) || (itStation == NewStation.begin() && rame.getDirection() == -1)) {//condition pour la boucle avec les stations
 			rame.Arreter(*itStation);
 			NewStation.back().setDepart(NewStation.back().getDepart() != 1 ? 1 : 2);
-			cout << "Dernière station: " << NewStation.back().getDepart() << endl;
 			NewStation.front().setDepart(NewStation.front().getDepart() != 2 ? 2 : 1);
-			cout << "Première station: " << NewStation.front().getDepart() << endl;
 			rame.setDirection((-1) * rame.getDirection());
 			itStation->setEtatMA(false);
-			cout << "Direction de la rame "<<rame.getId() << ":" << rame.getDirection() << endl;
 			this_thread::sleep_for(5s);
 		}
 		else {
 			if (itStation->getEtatMA()) {
 				if (rame.getDirection() == 1) {
 					rame.Avancer(*(itStation + 1));
-					cout << "++" << endl;
 					itStation++;
 				}
 				else {
@@ -45,7 +41,6 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 				}
 			}
 			else {
-				cout << "Arret station dans boucle while" << endl;
 				rame.Arreter(*itStation);
 			}
 		}
@@ -82,7 +77,7 @@ int main()
 	
 	jthread thr1(fonctionnement, s_source.get_token(), ref(rame0) ,ref(stations));
 	jthread thr2(fonctionnement, s_source.get_token(), ref(rame1), ref(stations));
-	//jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), stations);
+	jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), ref(stations));
 
 	return 0;
 }
