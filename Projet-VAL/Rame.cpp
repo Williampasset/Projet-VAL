@@ -92,7 +92,7 @@ void Rame::Avancer(Station& nextStation) {
 		}
 		setDistanceOldStation(distance);
 		setDistanceTotal(distance + distanceTotActuel);
-		cout << "Distance total de la rame "<<getId() << " : " << getDistanceTotal() << endl;
+		//cout << "Distance total de la rame "<<getId() << " : " << getDistanceTotal() << endl;
 	}
 	cout << "Arret station" << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
@@ -101,12 +101,12 @@ void Rame::Avancer(Station& nextStation) {
 void Rame::Arreter(Station& StopStation) {
 	while (getId() != 1 && distanceToNextRame() < 400) {
 		this_thread::sleep_for(1s);
-		cout <<"Distance rame 1: "<< NextRame->getDistanceTotal() << " et distance rame 2: " << getDistanceTotal() << endl;
 	}
+	StopStation.randPassager();
 	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
 		auto n = 0;
 		if (StopStation.getDepart() != 1) {
-			n = rand() % (getNbpassager() + 1);
+			n = rand() % (getNbpassager() + 1) - 1;
 		}
 		cout << "Nombre de personne qui sortent de la rame "<<getId()<<" : "<<  n << endl;
 		for (auto i = 0; i < n; i++) {
@@ -128,7 +128,7 @@ void Rame::Arreter(Station& StopStation) {
 			for (auto i = 0; i < n; i++) {
 				this_thread::sleep_for(0.5s);
 			}
-			cout << "Nombre de personne qui rentrent de la rame " << getId() << " : " << n << endl;
+			cout << "Nombre de personne qui rentrent dans la rame " << getId() << " : " << n << endl;
 			StopStation.setNbpassager(0);
 		}
 	}
@@ -141,21 +141,8 @@ void Rame::Arreter(Station& StopStation) {
 			setNbpassager(0);
 		}
 	}
-	/*while (rame.getUrgence()) {
-		this_thread::sleep_for(3s);
-	}*/
-	//if (rame.getId() != 1) {
-	//	/*while (Super.getRame(rame.getId() - 1).getDistanceDArame() - rame.getDistanceDArame() < 400) {
-	//		cout << Super.getRame(rame.getId() - 1).getDistanceDArame() << endl;
-	//		this_thread::sleep_for(3s);
-	//	}*/
-	//	/*if (distanceToNextRame(Super.getRame(rame.getId() - 1)) > 300) {
-	//		station.setEtatMA(true);
-	//	}*/
-	//}
 	this_thread::sleep_for(3s);
 	StopStation.setEtatMA(true);
-	StopStation.randPassager();
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station "<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
 	if (StopStation.getDepart() == 2) {

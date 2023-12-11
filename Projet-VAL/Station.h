@@ -41,5 +41,5 @@ class Station {
 		double getDistanceBefStation() const;
 		void setDistanceAftStation(const double& distanceAftStation_);
 		double getDistanceAftStation() const;
-
+		void copyStation(Station& OtherStation);
 };

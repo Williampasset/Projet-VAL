@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void fonctionnement(stop_token stop_token, Rame& rame, vector<Station> station) {
+void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
 	while (!stop_token.stop_requested()) {
@@ -78,12 +78,11 @@ int main()
 	stations.push_back(station3);
 	Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
-	for (auto& i : stations) i.randPassager();
 	stop_source s_source;
 	
-	jthread thr1(fonctionnement, s_source.get_token(), ref(rame0) ,stations);
-	jthread thr2(fonctionnement, s_source.get_token(), ref(rame1), stations);
-	jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), stations);
+	jthread thr1(fonctionnement, s_source.get_token(), ref(rame0) ,ref(stations));
+	jthread thr2(fonctionnement, s_source.get_token(), ref(rame1), ref(stations));
+	//jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), stations);
 
 	return 0;
 }

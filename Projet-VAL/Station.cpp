@@ -56,9 +56,11 @@ void Station::setDistanceDA(const double& DistanceDA_){
     DistanceDA = DistanceDA_;
 }
 void Station::randPassager(){
+    srand(static_cast<unsigned int>(time(nullptr)));
     if (getNbpassager() < 10 && getDepart() != 2 ) {
         int randToAdd = rand() % (10 - getNbpassager());
         Nbpersonne += randToAdd;
+        cout << "Station: " << getNom() << " Nombre de personne dans la station: " << getNbpassager() << endl;
     }
 }
 void Station::setDistanceBefStation(const double& distanceBefStation_) {
@@ -72,4 +74,11 @@ void Station::setDistanceAftStation(const double& distanceAftStation_) {
 }
 double Station::getDistanceAftStation() const {
     return distanceAftStation;
+}
+void Station::copyStation(Station& OtherStation) {
+    Nbpersonne = OtherStation.getNbpassager();
+    nom = OtherStation.getNom();
+    DistanceDA = OtherStation.getDistanceDAstation();
+    Depart = OtherStation.getDepart();
+    distanceBefStation = OtherStation.getDistanceBefStation();
 }
