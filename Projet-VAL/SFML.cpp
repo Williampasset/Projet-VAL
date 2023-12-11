@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 #include "train.hpp"
+#include <thread>
+#include <chrono>
 using namespace std;
 using namespace sf;
 
@@ -26,23 +28,20 @@ int main() {
     std::vector<sf::Vector2f> trajet = {
         {202.f, 250.f},
         {1860.f, 250.f},
-        {1860.f, 970.f},
-        {202.f, 970.f}
     };
 
     // Fond d'écran
     Texture backgroundImage, objet, runnerImage;
     Sprite backgroundSprite, objetSprite, runnerSprite;
 
-    if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png")){
+    if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png")) {
         cerr << "Erreur pendant le chargement des images" << endl;
         return EXIT_FAILURE; // On ferme le programme
     }
     backgroundSprite.setTexture(backgroundImage);
-   
     objetSprite.setTexture(objet);
     objetSprite.setScale(sf::Vector2f(0.5, 0.5));
-    Train train1(100, 100, 0, 1);
+
     // Création d'un point
     sf::CircleShape point(20.f);
     point.setFillColor(sf::Color::Red);
@@ -54,16 +53,9 @@ int main() {
     pointCible = trajet[1];
     point1.setPosition(pointCible);
 
-    sf::CircleShape point2(20.f);
-    point2.setFillColor(sf::Color::Red);
-    pointCible = trajet[2];
-    point2.setPosition(pointCible);
-   
-    sf::CircleShape point3(20.f);
-    point3.setFillColor(sf::Color::Red);
-    pointCible = trajet[3];
-    point3.setPosition(pointCible);
+
     
+
 
     // Indice du point actuel sur le trajet
     size_t index = 0;
@@ -80,26 +72,24 @@ int main() {
         sf::Vector2f pointCible = trajet[index];
         sf::Vector2f direction = pointCible - objetSprite.getPosition();
         float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
+        auto distancetot = objetSprite.getPosition(); 
+        this_thread::sleep_for(1s); 
         // Vérification si l'objet est proche du point cible
         if (distance < 1.0f) {
             index = (index + 1) % trajet.size(); // Passage au prochain point du trajet
         }
         else {
+            
             direction /= distance; // Normalisation du vecteur direction
-            //objetSprite.move(direction * 2.0f); // Vitesse de déplacement de l'objet
-            train1.move(trajet[index+1]);
-            objetSprite.setPosition(train1.getX(), train1.getY()); // Vitesse de déplacement de l'objet
-
+            objetSprite.move(direction * 10.0f); // Vitesse de déplacement de l'objet
         }
 
         window.clear();
         window.draw(backgroundSprite);
         window.draw(point);
         window.draw(point1);
-        window.draw(point2);
         window.draw(objetSprite);
-        
+
         window.display();
     }
 
