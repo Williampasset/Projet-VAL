@@ -2,13 +2,15 @@
 #include "Station.h"
 using namespace std;
 Rame::Rame(){
-    //cout<<"Rame created"<<endl;
+    cout<<"Rame created 0"<<endl;
 }
 Rame::Rame(const int& id_) : id(id_) {
-	//cout<<"Rame created"<<endl;
+	NextRame = nullptr;
+	cout<<"Rame created 1"<<endl;
 }
-Rame::Rame(const int& id_, Rame* NextRame_) : id(id_), NextRame(NextRame_) {
-
+Rame::Rame(const int& id_, Rame* NextRame_) : id(id_) {
+	NextRame = NextRame_;
+	cout << "Rame created 2" << endl;
 };
 Rame::~Rame(){
     //cout<<"Rame destroyed"<<endl;
@@ -44,7 +46,15 @@ void Rame::setUrgence(const bool& urgence_){
     urgence = urgence_;
 }
 double Rame::distanceToNextRame(){
-	return NextRame->distanceTotal - distanceTotal;
+	if (NextRame == nullptr) {
+        cout << "Pas de rame suivante." << endl;
+        return 0.0; // ou une valeur appropriée
+    }
+	else{
+		cout<<"Rame suivante"<<endl;
+		cout<<"Distance rame "<< NextRame->getId()<<" : "<<NextRame->getDistanceTotal()<<endl;
+		return NextRame->getDistanceTotal() - getDistanceTotal();
+	}
 }
 void Rame::setDistanceTotal(const double& distance){
 	distanceTotal = distance;
@@ -57,6 +67,7 @@ void Rame::Avancer(Station& nextStation) {
     cout << "Station suivante: " << nextStation.getNom() << "\tRame: "<<getId()<< endl;//affichage de la station suivante, la station où on va 
 	double time = 0;
 	double distanceTotActuel = getDistanceTotal();
+	float distanceLigneActuel = getDistanceLigne();
 	double distanceacc = 0;
 	double distanceconst = 0;
 	double distancedec = 0;
@@ -92,6 +103,7 @@ void Rame::Avancer(Station& nextStation) {
 		}
 		setDistanceOldStation(distance);
 		setDistanceTotal(distance + distanceTotActuel);
+		setDistanceLigne(distance + distanceLigneActuel);
 		//cout << "Distance total de la rame "<<getId() << " : " << getDistanceTotal() << endl;
 	}
 	cout << "Arret station: " << nextStation.getNom() << endl;
@@ -101,6 +113,7 @@ void Rame::Avancer(Station& nextStation) {
 void Rame::Arreter(Station& StopStation) {
 	while (getId() != 1 && distanceToNextRame() < 400) {
 		this_thread::sleep_for(1s);
+		cout << "Rame " << getId() << " : " << distanceToNextRame() << endl;
 	}
 	StopStation.randPassager();
 	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
@@ -149,6 +162,7 @@ void Rame::Arreter(Station& StopStation) {
 		this_thread::sleep_for(5s);
 		cout << "Changement de voie de la rame " << getId() << endl;
 		StopStation.setEtatMA(false);
+		setDistanceLigne(0);
 	}
 }
 
@@ -157,4 +171,13 @@ void Rame::setDirection(const int& direction_) {
 }
 int Rame::getDirection() {
 	return direction;
+}
+void Rame::setDistanceLigne(const float& distanceLigne_) {
+	distanceLigne = distanceLigne_;
+}
+float Rame::getDistanceLigne() {
+	return distanceLigne;
+}
+Rame* Rame::getNextRame() {
+	return NextRame;
 }

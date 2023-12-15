@@ -17,7 +17,7 @@
 
 
 #ifdef _MSC_VER 
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #define _PATH_IMG_ "C:/Program Files/SFML/img/"
 #else
 #define _PATH_IMG_ "../img/"
@@ -68,13 +68,15 @@ int main()
 	vector<Rame> rames;
 	vector<Station> stations; 
 	//création des rames : 
-	Rame rame0(1);
-	Rame rame1(2, &rame0);
-    Rame rame2(3, &rame1);
+	rames.emplace_back(1);
+	cout<<rames.at(0).getId()<<endl;
+	rames.emplace_back(2, &rames[0]);
+	cout<<&rames[0]<<endl;
+	cout<<rames.at(1).getNextRame()<<endl;
+	//Rame rame2(3, &rame1);
 	//Ajout des rames au vecteur de rames :
-	rames.push_back(ref(rame0)); 
-	rames.push_back(ref(rame1));
-	rames.push_back(rame2);
+
+	//rames.push_back(rame2);
 
 	//création des stations : 
 	Station station0("Bois Rouge", 0, 500, 500, 1);
@@ -89,9 +91,8 @@ int main()
 	//implémentation des passagers par station au départ 
 	stop_source s_source;
 	
-	
 	jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,ref(stations));
-	//jthread thr2(fonctionnement, s_source.get_token(), ref(rame1), ref(stations));
+	jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
 	//jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), ref(stations));
 
 	
@@ -102,16 +103,28 @@ int main()
 
 
     // Fond d'écran
-    Texture backgroundImage, objet, runnerImage;
-    Sprite backgroundSprite, objetSprite, runnerSprite;
+    Texture backgroundImage, objet;
+    Sprite backgroundSprite;
 
     if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png")) {
         cerr << "Erreur pendant le chargement des images" << endl;
         return EXIT_FAILURE; // On ferme le programme
     }
     backgroundSprite.setTexture(backgroundImage);
-    objetSprite.setTexture(objet);
-    objetSprite.setScale(sf::Vector2f(0.25, 0.25)); 
+
+	std::vector<sf::Sprite> ObjetSprite; // Assure-toi que tu as déclaré ObjetSprite en tant que vecteur de sprites
+
+	for (auto& rame : rames) {
+		sf::Sprite objetSprite; // Déclare l'objetSprite à l'intérieur de la boucle pour éviter des problèmes de portée
+		objetSprite.setTexture(objet);
+		objetSprite.setScale(sf::Vector2f(0.25f, 0.25f)); // Ajoute 'f' aux valeurs pour indiquer des constantes flottantes
+		ObjetSprite.push_back(objetSprite); // Ajoute l'objetSprite au vecteur
+	}
+
+	/*Sprite objetSprite;
+	objetSprite.setTexture(objet);
+	objetSprite.setScale(sf::Vector2f(0.25, 0.25));
+	ObjetSprite.push_back(ref(objetSprite));*/
 
 	
 	// Indice du point actuel sur le trajet
@@ -124,14 +137,29 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+		window.clear();
+		auto i = 0;
+		for(auto& rame : rames){
+			if(rame.getDirection() == 1){
+				auto distanceRame = rame.getDistanceLigne()*(1820-100) / 1300;
+				ObjetSprite.at(i).setPosition(100 + distanceRame, 50.f);
+			}
+			else{
+				auto distanceRame = rame.getDistanceLigne()*(1820-100) / 1300;
+				ObjetSprite.at(i).setPosition(1820 - distanceRame, 150.f);
+			}
+			window.draw(ObjetSprite.at(i));
+			i++;
+		}
 
-     
-		auto distanceRame = rames.at(0).getDistanceTotal()*(1820-100) / 1300;
-		objetSprite.setPosition(100 + distanceRame, 100.f);
-
-        window.clear();
         window.draw(backgroundSprite);
 		for (auto& station : stations) {
+			/*sf::Text text;
+			text.setString(station.getNom());
+			sf::Vector2f textpos(100 + (station.getDistanceDAstation()) * (1820 - 100) / 1300, 200.f);
+			text.setPosition(textpos);
+			window.draw(text);*/
+
 			sf::CircleShape point(20.f);
 			point.setFillColor(sf::Color::Red);
 			sf::Vector2f pointCible(100 + (station.getDistanceDAstation())*(1820-100)/1300,100.f);
@@ -140,8 +168,7 @@ int main()
 		}
 		//window.draw(point);
 		//window.draw(point1);
-        window.draw(objetSprite);
-
+		
         window.display();
     }
 

@@ -17,7 +17,8 @@ private:
 	double distanceTotal = 0;
 	bool urgence = false;
 	int direction = 1;
-	Rame* NextRame = nullptr;
+	float distanceLigne = 0;
+	Rame* NextRame;
 	//pas modifiable 
 	float distanceAcc = 200;
 	float distanceDec = 200;
@@ -47,4 +48,7 @@ public:
     void Arreter(Station& StopStation);
 	void setDirection(const int& direction_);
 	int getDirection();
+	void setDistanceLigne(const float& distanceLigne_);
+	float getDistanceLigne();
+	Rame* getNextRame();
 };
