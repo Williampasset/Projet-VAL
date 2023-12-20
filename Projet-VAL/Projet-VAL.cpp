@@ -67,16 +67,15 @@ int main()
 	//Initialisation des rames et des stations :
 	vector<Rame> rames;
 	vector<Station> stations; 
+	rames.reserve(2);//A MODIFIER SELON LE NOMBRE DE RAME-->Sinon bug sur les adresses
 	//création des rames : 
 	rames.emplace_back(1);
-	cout<<rames.at(0).getId()<<endl;
-	rames.emplace_back(2, &rames[0]);
-	cout<<&rames[0]<<endl;
-	cout<<rames.at(1).getNextRame()<<endl;
-	//Rame rame2(3, &rame1);
-	//Ajout des rames au vecteur de rames :
+	cout << &rames[0] << endl;
 
-	//rames.push_back(rame2);
+	// Création de la deuxième rame en utilisant l'adresse de la première rame :
+	rames.emplace_back(2, &rames[0]);
+	cout << rames.at(1).getNextRame()->getId() << endl;
+	//Rame rame2(3, &rame1);
 
 	//création des stations : 
 	Station station0("Bois Rouge", 0, 500, 500, 1);

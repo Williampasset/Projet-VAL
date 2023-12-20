@@ -18,7 +18,7 @@ private:
 	bool urgence = false;
 	int direction = 1;
 	float distanceLigne = 0;
-	Rame* NextRame;
+	Rame* NextRame = nullptr;
 	//pas modifiable 
 	float distanceAcc = 200;
 	float distanceDec = 200;
