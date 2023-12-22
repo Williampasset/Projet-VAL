@@ -26,7 +26,6 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 				}
 				else {
 					rame.Avancer(*(itStation - 1));
-					cout << "--" << endl;
 					itStation--;
 				}
 			}
@@ -47,24 +46,20 @@ int main()
 	//création des rames : 
 	rames.emplace_back(1);
 	rames.emplace_back(2, &rames[0]);
-	//rames.emplace_back(3, &rames[1]);
+	rames.emplace_back(3, &rames[1]);
 
 	//création des stations : 
-	Station station0("Bois Rouge", 0, 500, 500, 1);
-	Station station1("Bois Blanc", 500, 500, 400, 0);
-	Station station2("Republique", 900, 400, 400, 0);
-	Station station3("Jeremy", 1300, 400, 400, 2);
-	stations.push_back(station0);
-	stations.push_back(station1);
-	stations.push_back(station2);
-	stations.push_back(station3);
+	stations.emplace_back("Bois Rouge", 0, 500, 500, 1);
+	stations.emplace_back("Bois Blanc", 500, 500, 400, 0);
+	stations.emplace_back("Republique", 900, 400, 400, 0);
+	stations.emplace_back("Jeremy", 1300, 400, 400, 2);
 	//Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
 	stop_source s_source;
 	
 	jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,ref(stations));
 	jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
-	//jthread thr3(fonctionnement, s_source.get_token(), ref(rame2), ref(stations));
+	jthread thr3(fonctionnement, s_source.get_token(), ref(rames.at(2)), ref(stations));
 
 	
 	 // Création de la fenêtre SFML
@@ -77,11 +72,11 @@ int main()
     Texture backgroundImage, objet;
     Sprite backgroundSprite;
 
-    if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png")) {
+    if (/*!backgroundImage.loadFromFile(path_image + "rail.png") ||*/ !objet.loadFromFile(path_image + "train.png")) {
         cerr << "Erreur pendant le chargement des images" << endl;
         return EXIT_FAILURE; // On ferme le programme
     }
-    backgroundSprite.setTexture(backgroundImage);
+    //backgroundSprite.setTexture(backgroundImage);
 
 	vector<Sprite> ObjetSprite; // Assure-toi que tu as déclaré ObjetSprite en tant que vecteur de sprites
 
