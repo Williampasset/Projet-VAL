@@ -1,6 +1,5 @@
 #include "Rame.h"
-#include "Station.h"
-using namespace std;
+
 Rame::Rame(){
     cout<<"Rame created 0"<<endl;
 }
@@ -29,9 +28,6 @@ int Rame::getId() const{
 }
 int Rame::getNbpassager() const{
     return nbpassager;
-}
-int Rame::getnbpassagermax() const{
-    return nbpassagermax;
 }
 double Rame::getV() const{
     return v;
@@ -65,53 +61,50 @@ double Rame::getDistanceTotal() const{
 void Rame::Avancer(Station& nextStation) {
     auto distance = getDistanceOldStation(); //distance de la rame par rapport à la rame d'avant, variable incrémenter pour calculer la distance en permanence
     cout << "Station suivante: " << nextStation.getNom() << "\tRame: "<<getId()<< endl;//affichage de la station suivante, la station où on va 
-	double time = 0;
-	double distanceTotActuel = getDistanceTotal();
+	float time = 0;
+	float distanceTotActuel = getDistanceTotal();
 	float distanceLigneActuel = getDistanceLigne();
-	double distanceacc = 0;
-	double distanceconst = 0;
-	double distancedec = 0;
+	float distanceacc = 0;
+	float distanceconst = 0;
+	float distancedec = 0;
     while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1) ) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
-		if (getV() < 16.6 && (nextStation.getDistanceBefStation()) - distance > 100 ) {//démarrage quand on est au départ 
+		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > STOPDISTANCE ) {//condition d'acceleration
 			if (distanceacc == 0) {
 				time = 0.1;
 			}
-			distanceacc = (((1.4) * (time*time) * 0.5) + distancedec + distanceconst);
-			//cout << "distance rame demarrage "<<getId()<<" : " << distanceacc << endl;
+			distanceacc = (((ACC) * (time*time) * 0.5) + distancedec + distanceconst);
 			distance = distanceacc;
 			setV((1.4) * (time));
 		}
-		else if ((nextStation.getDistanceBefStation()) - distance < 100 /*|| (getId() != 1 && distanceToNextRame(OtherRame)<400)*/) {//décélération normale
+		else if ((nextStation.getDistanceBefStation()) - distance < STOPDISTANCE) {//décélération normale
 			if (distancedec == 0) {
 				time = 0.1;
 			}
-			distancedec = ((16.6 * time - (1.4 * (time * time) * 0.5)) + distanceconst);
-			//cout << "distance rame deceleration " << getId() << " : " << distancedec << endl;
+			distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);
 			distance = distancedec;
-			setV(16.6 - (1.4*time));
+			setV(VMAX - (ACC*time));
 		}
-		else {
+		else {//Vitesse constante
 			if (distanceconst == 0) {
 				time = 0.1;
 			}
-			distanceconst = ((16.6 * time) + distanceacc + distancedec);
-			//cout << "distance rame constant " << getId() << " : " << distanceconst << endl;
+			distanceconst = ((VMAX * time) + distanceacc + distancedec);
 			distance = distanceconst;
-			setV(16.6);
+			setV(VMAX);
 		}
 		setDistanceOldStation(distance);
 		setDistanceTotal(distance + distanceTotActuel);
 		setDistanceLigne(distance + distanceLigneActuel);
-		//cout << "Distance total de la rame "<<getId() << " : " << getDistanceTotal() << endl;
 	}
 	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
 	nextStation.setEtatMA(false);
 }
+
 void Rame::Arreter(Station& StopStation) {
-	while (getId() != 1 && distanceToNextRame() < 400) {
+	while (getId() != 1 && distanceToNextRame() < SECURDISTANCE) {
 		this_thread::sleep_for(1s);
 		cout << "Rame " << getId() << " : " << distanceToNextRame() << endl;
 	}

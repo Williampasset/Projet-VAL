@@ -1,31 +1,19 @@
 
 #pragma once
-#include "vector"
-#include "algorithm"
+#include "Projet-VAL.h"
 #include "Station.h"
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <cstdlib>
-#include <ctime>
 class Rame {
 private:
 	const int id = 0;
 	int nbpassager = 0;
-	double v = 0;//vitesse actuelle
-	double distanceOldStation = 1;
-	double distanceTotal = 0;
+	float v = 0;//vitesse actuelle
+	float distanceOldStation = 1;
+	float distanceTotal = 0;
 	bool urgence = false;
 	int direction = 1;
 	float distanceLigne = 0;
 	Rame* NextRame = nullptr;
 	//pas modifiable 
-	float distanceAcc = 200;
-	float distanceDec = 200;
-	float distanceFreinage = 50;
-	float distanceSecurite = 400;
-	double vmax = 16.6;//vitesse max
-	int nbpassagermax = 10;
 public:
 	Rame();
 	Rame(const int& id_);
