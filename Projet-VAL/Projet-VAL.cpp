@@ -6,6 +6,10 @@
 #include "Station.h"
 #include "Superviseur.h"
 
+sf::Font font; // Définition de la police
+
+const std::string path_font = _PATH_FONT_; // Définition du chemin de la police
+
 void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
@@ -38,6 +42,7 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 
 int main()
 {
+
 	srand(static_cast<unsigned int>(time(nullptr)));
 	//Initialisation des rames et des stations :
 	vector<Rame> rames;
@@ -67,6 +72,12 @@ int main()
     RenderWindow window(fullscreenMode, "Objet suivant un trajet", Style::Fullscreen);
     cout << "Taille de l'écran en plein écran : " << fullscreenMode.width << "x" << fullscreenMode.height << endl;
 
+	//Pour la police d'écriture 
+	// Charger la police ici
+	if (!font.loadFromFile(path_font + "arial.ttf")) {
+		std::cerr << "Error while loading font" << std::endl;
+		return -1;
+	}
 
     // Fond d'écran
     Texture backgroundImage, objet;
@@ -89,7 +100,7 @@ int main()
 
 	// Indice du point actuel sur le trajet
     size_t index = 0;
-
+	
     // Boucle principale qui permet d'afficher le programme
     while (window.isOpen()) {
         Event event;
@@ -114,11 +125,21 @@ int main()
 
         window.draw(backgroundSprite);
 		for (auto& station : stations) {
-			CircleShape point(20.f);
+			CircleShape point(15.f);
 			point.setFillColor(Color::Red);
 			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1820-100)/1300,100.f);
 			point.setPosition(pointCible);
 			window.draw(point);
+
+			Text stationName;
+			stationName.setFont(font); // Utilisation de la police de caractères par défaut de SFML
+			stationName.setCharacterSize(24);
+			stationName.setFillColor(Color::White);
+			stationName.setString(station.getNom());
+			FloatRect textRect = stationName.getLocalBounds();
+			stationName.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+			stationName.setPosition(pointCible.x, pointCible.y + point.getRadius() + 30);
+			window.draw(stationName);
 		}
 		
         window.display();

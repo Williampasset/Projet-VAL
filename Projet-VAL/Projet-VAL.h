@@ -12,26 +12,33 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <cassert>
 
 using namespace std;
 using namespace sf;
 
-const float SECURDISTANCE = 400;//Distance de sécurité entre chaque rame
-const float VMAX = 16.6;//vitesse max des rames
-const int NBPASSMAX = 10;//Nombre de passager dans la rame et sur le quai
-const int STOPDISTANCE = 100;//Distance à laquelle la déceleration s'enclenche
-const float ACC = 1.4;//Accéleration des rames
-const float TIMEPASS = 0.5;//Temps par passager lors de l'échange
+const float SECURDISTANCE = 400;
+const float VMAX = 16.6;
+const int NBPASSMAX = 10;
+const int STOPDISTANCE = 100;
+const float ACC = 1.4;
+const float TIMEPASS = 0.5;
 const int RAMENOMBER = 3;
 
 #ifdef _MSC_VER 
-//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #define _PATH_IMG_ "C:/Program Files/SFML/img/"
 #else
 #define _PATH_IMG_ "../img/"
 #endif
 
+#ifdef _MSC_VER 
+#define _PATH_FONT_ "C:/Program Files/SFML/font/"
+#else
+#define _PATH_FONT_ "../font/"
+#endif
+
+extern sf::Font font; // Déclaration externe de la police
+
+extern const std::string path_font; // Déclaration externe du chemin de la police
 
 const std::string path_image(_PATH_IMG_);
-
-
