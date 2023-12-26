@@ -1,4 +1,5 @@
 #include "Rame.h"
+# define M_PI  3.14159265358979323846
 
 Rame::Rame(){
     cout<<"Rame created 0"<<endl;
@@ -47,8 +48,6 @@ double Rame::distanceToNextRame(){
         return 0.0; // ou une valeur appropriée
     }
 	else{
-		cout<<"Rame suivante"<<endl;
-		cout<<"Distance rame "<< NextRame->getId()<<" : "<<NextRame->getDistanceTotal()<<endl;
 		return NextRame->getDistanceTotal() - getDistanceTotal();
 	}
 }
@@ -97,6 +96,7 @@ void Rame::Avancer(Station& nextStation) {
 		setDistanceOldStation(distance);
 		setDistanceTotal(distance + distanceTotActuel);
 		setDistanceLigne(distance + distanceLigneActuel);
+		setPos();
 	}
 	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
@@ -106,7 +106,10 @@ void Rame::Avancer(Station& nextStation) {
 void Rame::Arreter(Station& StopStation) {
 	while (getId() != 1 && distanceToNextRame() < SECURDISTANCE) {
 		this_thread::sleep_for(1s);
-		cout << "Rame " << getId() << " : " << distanceToNextRame() << endl;
+	}
+	setPos();
+	if (!Go) {
+		Go = true;
 	}
 	StopStation.randPassager();
 	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
@@ -152,10 +155,18 @@ void Rame::Arreter(Station& StopStation) {
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station "<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
 	if (StopStation.getDepart() == 2) {
-		this_thread::sleep_for(5s);
+		double angle =  -M_PI / 2;
+		const double endAngle = M_PI / 2;
+		while (direction == 1 ? (angle <= endAngle) : (angle >= endAngle)) {
+			this_thread::sleep_for(10ms);
+			Rotate(angle);
+			direction == 1 ? angle += M_PI / 500 : angle -= M_PI / 500;
+		}
+		rotate = true;
 		cout << "Changement de voie de la rame " << getId() << endl;
 		StopStation.setEtatMA(false);
 		setDistanceLigne(0);
+		rotate = false;
 	}
 }
 
@@ -173,4 +184,43 @@ float Rame::getDistanceLigne() {
 }
 Rame* Rame::getNextRame() {
 	return NextRame;
+}
+bool Rame::getGo() {
+	return Go;
+}
+float Rame::getXpos() const {
+	return x;
+};
+float Rame::getYpos() const {
+	return y;
+};
+void Rame::setXpos(const float& newX){
+	x = newX;
+}
+void Rame::setYpos(const float& newY) {
+	y = newY;
+}
+void Rame::setPos() {
+	if (direction == 1) {
+		setXpos((50 + (distanceLigne*1720/1200)));
+		cout << x << endl;
+		cout << distanceLigne << endl;
+		setYpos(40.f);
+	}
+	else {
+		setXpos(1770 - (distanceLigne * 1720 / 1200));
+		setYpos(160.f);
+	}
+}
+void Rame::Rotate(const double& angle) {
+	//Position du point centrale
+	double centerX = (direction == 1 ? 1770 : 50);
+	double centerY = 100;
+
+	// Effectue la rotation autour du centre (x, y)
+	setXpos(centerX + (cos(angle) * 60));
+	setYpos(centerY + (sin(angle) * 60));
+}
+bool Rame::getRotate() const{
+	return rotate;
 }

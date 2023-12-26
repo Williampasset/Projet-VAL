@@ -13,11 +13,12 @@
 #include <ctime>
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 using namespace std;
 using namespace sf;
 
-const float SECURDISTANCE = 400;
+const float SECURDISTANCE = 1000;
 const float VMAX = 16.6;
 const int NBPASSMAX = 10;
 const int STOPDISTANCE = 100;

@@ -6,11 +6,11 @@
 #include "Station.h"
 #include "Superviseur.h"
 
-sf::Font font; // Définition de la police
+Font font; // Définition de la police
 
-const std::string path_font = _PATH_FONT_; // Définition du chemin de la police
+const string path_font = _PATH_FONT_; // Définition du chemin de la police
 
-void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {
+void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {//Gére le fonctionnement entier d'une rame
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
 	while (!stop_token.stop_requested()) {
@@ -50,21 +50,21 @@ int main()
 	rames.reserve(RAMENOMBER);//A MODIFIER SELON LE NOMBRE DE RAME-->Sinon bug sur les adresses
 	//création des rames : 
 	rames.emplace_back(1);
-	rames.emplace_back(2, &rames[0]);
-	rames.emplace_back(3, &rames[1]);
+	//rames.emplace_back(2, &rames[0]);
+	//rames.emplace_back(3, &rames[1]);
 
 	//création des stations : 
-	stations.emplace_back("Bois Rouge", 0, 500, 500, 1);
-	stations.emplace_back("Bois Blanc", 500, 500, 400, 0);
-	stations.emplace_back("Republique", 900, 400, 400, 0);
-	stations.emplace_back("Jeremy", 1300, 400, 400, 2);
+	stations.emplace_back("Bois Rouge", 0, 1200, 1);
+	stations.emplace_back("Bois Blanc", 400, 400, 0);
+	stations.emplace_back("Republique", 800, 400, 0);
+	stations.emplace_back("Jeremy", 1200, 1200, 2);
 	//Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
 	stop_source s_source;
 	
 	jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,ref(stations));
-	jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
-	jthread thr3(fonctionnement, s_source.get_token(), ref(rames.at(2)), ref(stations));
+	//jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
+	//jthread thr3(fonctionnement, s_source.get_token(), ref(rames.at(2)), ref(stations));
 
 	
 	 // Création de la fenêtre SFML
@@ -75,7 +75,7 @@ int main()
 	//Pour la police d'écriture 
 	// Charger la police ici
 	if (!font.loadFromFile(path_font + "arial.ttf")) {
-		std::cerr << "Error while loading font" << std::endl;
+		cerr << "Error while loading font" << endl;
 		return -1;
 	}
 
@@ -103,31 +103,32 @@ int main()
 	
     // Boucle principale qui permet d'afficher le programme
     while (window.isOpen()) {
+		//Initialisation de la fenêtre d'affichage
         Event event;
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
         }
 		window.clear();
-		auto i = 0;
+
+		auto i = 0;//Compteur
+		//Affichage des rames
 		for(auto& rame : rames){
-			if(rame.getDirection() == 1){
-				auto distanceRame = rame.getDistanceLigne()*(1820-100) / 1300;
-				ObjetSprite.at(i).setPosition(100 + distanceRame, 50.f);
+			ObjetSprite.at(i).setPosition(rame.getXpos(), rame.getYpos());
+			if (rame.getRotate()) {
+				ObjetSprite.at(i).setScale(rame.getDirection() == 1 ? -(0.25) : 0.25, 0.25);
 			}
-			else{
-				auto distanceRame = rame.getDistanceLigne()*(1820-100) / 1300;
-				ObjetSprite.at(i).setPosition(1820 - distanceRame, 150.f);
+			if (rame.getGo()) {
+				window.draw(ObjetSprite.at(i));
 			}
-			window.draw(ObjetSprite.at(i));
 			i++;
 		}
 
-        window.draw(backgroundSprite);
+        //window.draw(backgroundSprite);
 		for (auto& station : stations) {
 			CircleShape point(15.f);
 			point.setFillColor(Color::Red);
-			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1820-100)/1300,100.f);
+			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1720)/1200,100.f);
 			point.setPosition(pointCible);
 			window.draw(point);
 
