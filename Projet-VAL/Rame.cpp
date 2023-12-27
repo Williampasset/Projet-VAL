@@ -80,6 +80,11 @@ void Rame::Avancer(Station& nextStation) {
 		time += 0.1;
 		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo()){
 			urgence = true;
+			urgenceAuto = true;
+		}
+		if(urgenceAuto && distanceToNextRame() > SECURDISTANCE){
+			urgence = false;
+			urgenceAuto = false;
 		}
 		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {//condition d'acceleration
 			if (distanceacc == 0) {
@@ -100,7 +105,7 @@ void Rame::Avancer(Station& nextStation) {
 			}
 			if(getV()<VMAX && distanceconst == 0){
 				distancedec = ((vitesse * time - (ACC * (time * time) * 0.5)) + distanceacc);
-				distance = distancedec;
+				distance = abs(distancedec);
 				setV(vitesse - (ACC*time));
 			}
 			else{
@@ -261,4 +266,7 @@ void Rame::Rotate(const double& angle) {
 }
 bool Rame::getRotate() const{
 	return rotate;
+}
+bool Rame::getUrgenceAuto() const{
+	return urgenceAuto;
 }

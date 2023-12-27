@@ -17,6 +17,7 @@ private:
 	float x = 0;//Position en pixels
 	float y = 0;
 	bool rotate = false;
+	bool urgenceAuto = false;
 
 public:
 	Rame();
@@ -51,4 +52,5 @@ public:
 	void Rotate(const double& angle);
 	bool getRotate() const;
 	void setNextRame(Rame* NextRame_);
+	bool getUrgenceAuto() const;
 };

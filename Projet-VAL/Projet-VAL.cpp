@@ -69,7 +69,7 @@ int main()
 	
 	//création des stations : 
 	stations.emplace_back("Bois Rouge", 0, 600, 1);
-	stations.emplace_back("Bois Blanc", 600, 600, 0);
+	stations.emplace_back("Bois Blanc", 600, 800, 0);
 	stations.emplace_back("Republique", 1400, 800, 0);
 	stations.emplace_back("Jeremy", DISTANCELINE, 600, 2);
 	
@@ -126,8 +126,7 @@ int main()
 	sf::Vector2f tablePosition(500.f, 500.f);
 	
 	float rowSpacing = 30.f;
-	sf::Color couleur;
-	couleur = sf::Color::Green;
+	
 	// Position et taille des boutons
 	float buttonWidth = 50.f;
 	float buttonHeight = 20.f;
@@ -147,12 +146,11 @@ int main()
 						cout << "Bouton de la rame " << rows[i].name << " cliqué !" << endl;
 						if (rames.at(i).getUrgence() == 1) {
 							rames.at(i).setUrgence(0);
-							couleur = Color::Green;
 							cout <<"urgence"<<rames.at(i).getUrgence() << endl;
 						}
 						else {
 							rames.at(i).setUrgence(1);
-							couleur = Color::Red;
+						
 							cout <<"urgence"<< rames.at(i).getUrgence() << endl;
 						}
 						
@@ -251,7 +249,16 @@ int main()
 			//bouton arrêt urgence 
 			rows[i].button.setSize(Vector2f(buttonWidth, buttonHeight));
 			rows[i].button.setPosition(tablePosition.x + 450.f, tablePosition.y + i * rowSpacing);
-			rows[i].button.setFillColor(couleur);
+			if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == false) {
+				rows[i].button.setFillColor(Color::Red);
+			}
+			else if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == true) {
+				rows[i].button.setFillColor(Color::Yellow);
+			}
+			else {
+				rows[i].button.setFillColor(Color::Green);
+			}
+			
 			window.draw(rows[i].button);
 		}
 
