@@ -18,13 +18,13 @@
 using namespace std;
 using namespace sf;
 
-const float SECURDISTANCE = 1000;
+const float SECURDISTANCE = 600;
 const float VMAX = 16.6;
 const int NBPASSMAX = 10;
-const int STOPDISTANCE = 100;
 const float ACC = 1.4;
 const float TIMEPASS = 0.5;
 const int RAMENOMBER = 3;
+const float DISTANCELINE = 2000;
 
 #ifdef _MSC_VER 
 #define _PATH_IMG_ "C:/Program Files/SFML/img/"

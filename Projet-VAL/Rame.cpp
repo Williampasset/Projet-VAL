@@ -47,8 +47,11 @@ double Rame::distanceToNextRame(){
         cout << "Pas de rame suivante." << endl;
         return 0.0; // ou une valeur appropriée
     }
+	else if(id!=1){
+		return abs(NextRame->getDistanceTotal() - getDistanceTotal());
+	}
 	else{
-		return NextRame->getDistanceTotal() - getDistanceTotal();
+		return DISTANCELINE - distanceLigne + NextRame->getDistanceTotal() ;
 	}
 }
 void Rame::setNextRame(Rame* NextRame_){
@@ -69,26 +72,51 @@ void Rame::Avancer(Station& nextStation) {
 	float distanceacc = 0;
 	float distanceconst = 0;
 	float distancedec = 0;
-    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1) || (urgence && getV() >= 1)  && distanceToNextRame() > SECURDISTANCE) {
+	float distanceUrgence = 0;
+	float vitesse = 0;
+	float stopDistance = 100;
+    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
-		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > STOPDISTANCE && !urgence) {//condition d'acceleration
+		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo()){
+			urgence = true;
+		}
+		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {//condition d'acceleration
 			if (distanceacc == 0) {
-				time = 0.1;
+					time = 0.1;
 			}
-			distanceacc = (((ACC) * (time*time) * 0.5) + distancedec + distanceconst);
+			distanceacc = (((ACC) * (time*time) * 0.5) + distancedec + distanceconst + distanceUrgence);
 			distance = distanceacc;
 			setV((1.4) * (time));
+			vitesse = getV();
+			if(nextStation.getDistanceBefStation() - distance < 2*stopDistance && stopDistance == 100){
+				stopDistance = (nextStation.getDistanceBefStation() - distance)/2;
+				cout<<"STOP DISTANCE: "<<stopDistance<<endl;
+			}
 		}
-		else if (((nextStation.getDistanceBefStation()) - distance < STOPDISTANCE) || (urgence && getV() >= 1) ) {//décélération normale
+		else if (((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV()>1) ) {//décélération normale
 			if (distancedec == 0) {
 				time = 0.1;
 			}
-			distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);
-			distance = distancedec;
-			setV(VMAX - (ACC*time));
+			if(getV()<VMAX && distanceconst == 0){
+				distancedec = ((vitesse * time - (ACC * (time * time) * 0.5)) + distanceacc);
+				distance = distancedec;
+				setV(vitesse - (ACC*time));
+			}
+			else{
+				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);
+				distance = distancedec;
+				setV(VMAX - (ACC*time));
+			}
 		}
-		else {//Vitesse constante
+		else if(urgence && (getV() <= 1)) {
+			setV(0);
+			distanceacc = 0;
+			distanceconst = 0;
+			distancedec = 0;
+			distanceUrgence = distance;
+		}
+		else if(!urgence){//Vitesse constante
 			if (distanceconst == 0) {
 				time = 0.1;
 			}
@@ -101,9 +129,13 @@ void Rame::Avancer(Station& nextStation) {
 		setDistanceLigne(distance + distanceLigneActuel);
 		setPos();
 	}
+	setDistanceLigne(nextStation.getDistanceDAstation());
+	setDistanceTotal(distanceTotActuel + nextStation.getDistanceDAstation());
+	setPos();
 	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
 	nextStation.setEtatMA(false);
+	setV(0);
 }
 
 void Rame::Arreter(Station& StopStation) {
@@ -207,13 +239,14 @@ void Rame::setYpos(const float& newY) {
 }
 void Rame::setPos() {
 	if (direction == 1) {
-		setXpos((55 + (distanceLigne*1720/1200)));
-		cout << x << endl;
-		cout << distanceLigne << endl;
+		setXpos((55 + (distanceLigne*1720/DISTANCELINE)));
+		/*cout << x << endl;*/
+		/*cout << v << endl;*/
+		/*cout << distanceLigne << endl;*/
 		setYpos(40.f);
 	}
 	else {
-		setXpos(1860 - (distanceLigne * 1720 / 1200));
+		setXpos(1860 - (distanceLigne * 1720 / DISTANCELINE));
 		setYpos(160.f);
 	}
 }

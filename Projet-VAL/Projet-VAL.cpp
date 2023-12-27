@@ -26,6 +26,13 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 			if (itStation->getEtatMA()) {
 				if (rame.getDirection() == 1) {
 					rame.Avancer(*(itStation + 1));
+					/*if (rame.getUrgence() == true) {
+						while (rame.getUrgence() == true) {
+							this_thread::sleep_for(1s);
+							cout << "attente" << endl; 
+						}
+						rame.Avancer(*(itStation+1));
+					}*/
 					itStation++;
 				}
 				else{
@@ -33,7 +40,7 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 					itStation--;
 				}
 			}
-			else if(!rame.getUrgence()){
+			else{
 				rame.Arreter(*itStation);
 			}
 		}
@@ -61,11 +68,11 @@ int main()
 	rames.at(0).setNextRame(&rames[2]);
 	
 	//création des stations : 
-	stations.emplace_back("Bois Rouge", 0, 400, 1);
-	stations.emplace_back("Bois Blanc", 400, 400, 0);
-	stations.emplace_back("Republique", 800, 400, 0);
-	stations.emplace_back("Jeremy", 1200, 400, 2);
-	//Superviseur Super(rames); 
+	stations.emplace_back("Bois Rouge", 0, 600, 1);
+	stations.emplace_back("Bois Blanc", 600, 600, 0);
+	stations.emplace_back("Republique", 1400, 800, 0);
+	stations.emplace_back("Jeremy", DISTANCELINE, 600, 2);
+	
 	//implémentation des passagers par station au départ 
 	stop_source s_source;
 	
@@ -111,14 +118,16 @@ int main()
 
 	vector<Row> rows{
 	   {"Rame 1", sf::RectangleShape(sf::Vector2f(50, 20))},
-	   {"Rame 2", sf::RectangleShape(sf::Vector2f(50, 20))}
+	   {"Rame 2", sf::RectangleShape(sf::Vector2f(50, 20))},
+	   {"Rame 3", sf::RectangleShape(sf::Vector2f(50, 20))}
 	  
 	};
 	
 	sf::Vector2f tablePosition(500.f, 500.f);
 	
 	float rowSpacing = 30.f;
-
+	sf::Color couleur;
+	couleur = sf::Color::Green;
 	// Position et taille des boutons
 	float buttonWidth = 50.f;
 	float buttonHeight = 20.f;
@@ -135,12 +144,16 @@ int main()
 				Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 				for (size_t i = 0; i < rows.size(); ++i) {
 					if (rows[i].button.getGlobalBounds().contains(mousePos)) {
-						std::cout << "Bouton de la rame " << rows[i].name << " cliqué !" << std::endl;
+						cout << "Bouton de la rame " << rows[i].name << " cliqué !" << endl;
 						if (rames.at(i).getUrgence() == 1) {
 							rames.at(i).setUrgence(0);
+							couleur = Color::Green;
+							cout <<"urgence"<<rames.at(i).getUrgence() << endl;
 						}
 						else {
 							rames.at(i).setUrgence(1);
+							couleur = Color::Red;
+							cout <<"urgence"<< rames.at(i).getUrgence() << endl;
 						}
 						
 					}
@@ -163,12 +176,35 @@ int main()
 			}
 			i++;
 		}
+		//affichage des titres 
+		Text Titre;
+		Titre.setFont(font);
+		Titre.setString("Informations Rames :");
+		Titre.setCharacterSize(30);
+		Titre.setFillColor(Color::White);
+		Titre.setPosition(tablePosition.x, tablePosition.y -60.f);
+		window.draw(Titre);
+		Text Titre1;
+		Titre1.setFont(font);
+		Titre1.setString("Vitesse :");
+		Titre1.setCharacterSize(20);
+		Titre1.setFillColor(Color::White);
+		Titre1.setPosition(tablePosition.x + 150.f, tablePosition.y - 30.f);
+		window.draw(Titre1);
+		Text Titre2;
+		Titre2.setFont(font);
+		Titre2.setString("Distance :");
+		Titre2.setCharacterSize(20);
+		Titre2.setFillColor(Color::White);
+		Titre2.setPosition(tablePosition.x + 300.f, tablePosition.y - 30.f);
+		window.draw(Titre2);
+
 
         //window.draw(backgroundSprite);
 		for (auto& station : stations) {
 			CircleShape point(15.f);
 			point.setFillColor(Color::Red);
-			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1720)/1200,100.f);
+			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1720)/DISTANCELINE,100.f);
 			point.setPosition(pointCible);
 			window.draw(point);
 
@@ -185,6 +221,7 @@ int main()
 
 		//Pour le tableau : 
 		for (size_t i = 0; i < rows.size(); ++i) {
+			//nom de la rame 
 			Text text;
 			text.setFont(font);
 			text.setString(rows[i].name);
@@ -192,10 +229,29 @@ int main()
 			text.setFillColor(Color::White);
 			text.setPosition(tablePosition.x, tablePosition.y + i * rowSpacing);
 			window.draw(text);
+			//vitesse  de la rame 
+			Text text2;
+			text2.setFont(font);
+			float vitesserame = rames.at(i).getV();
+			text2.setString(to_string(vitesserame));
+			text2.setCharacterSize(16);
+			text2.setFillColor(Color::White);
+			text2.setPosition(tablePosition.x + 150.f, tablePosition.y + i * rowSpacing);
+			window.draw(text2);
 
+			//distance de la rame 
+			Text text3;
+			text3.setFont(font);
+			float distancerame = rames.at(i).getDistanceTotal();
+			text3.setString(to_string(distancerame));
+			text3.setCharacterSize(16);
+			text3.setFillColor(Color::White);
+			text3.setPosition(tablePosition.x + 300.f, tablePosition.y + i * rowSpacing);
+			window.draw(text3);
+			//bouton arrêt urgence 
 			rows[i].button.setSize(Vector2f(buttonWidth, buttonHeight));
-			rows[i].button.setPosition(tablePosition.x + 150.f, tablePosition.y + i * rowSpacing);
-			rows[i].button.setFillColor(Color::Green);
+			rows[i].button.setPosition(tablePosition.x + 450.f, tablePosition.y + i * rowSpacing);
+			rows[i].button.setFillColor(couleur);
 			window.draw(rows[i].button);
 		}
 
