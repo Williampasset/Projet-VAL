@@ -155,12 +155,12 @@ void Rame::Arreter(Station& StopStation) {
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station "<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
 	if (StopStation.getDepart() == 2) {
-		double angle =  -M_PI / 2;
-		const double endAngle = M_PI / 2;
-		while (direction == 1 ? (angle <= endAngle) : (angle >= endAngle)) {
+		double angle =  direction == 1 ? (-1)*(M_PI / 2) : (M_PI / 2);
+		double endAngle = direction == 1 ? (M_PI / 2) : 3*M_PI/2 ;
+		while (angle <= endAngle) {
 			this_thread::sleep_for(10ms);
 			Rotate(angle);
-			direction == 1 ? angle += M_PI / 400 : angle -= M_PI / 400;
+			angle += M_PI / 400;
 		}
 		rotate = true;
 		cout << "Changement de voie de la rame " << getId() << endl;
@@ -216,7 +216,7 @@ void Rame::setPos() {
 }
 void Rame::Rotate(const double& angle) {
 	//Position du point centrale
-	double centerX = (direction == 1 ? 1770 : 50);
+	double centerX = (direction == 1 ? 1860 : 55);
 	double centerY = 100;
 
 	// Effectue la rotation autour du centre (x, y)
