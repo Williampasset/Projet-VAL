@@ -50,4 +50,5 @@ public:
 	void setPos();
 	void Rotate(const double& angle);
 	bool getRotate() const;
+	void setNextRame(Rame* NextRame_);
 };

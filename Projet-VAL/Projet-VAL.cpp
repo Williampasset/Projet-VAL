@@ -28,12 +28,12 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 					rame.Avancer(*(itStation + 1));
 					itStation++;
 				}
-				else {
+				else{
 					rame.Avancer(*(itStation - 1));
 					itStation--;
 				}
 			}
-			else {
+			else if(!rame.getUrgence()){
 				rame.Arreter(*itStation);
 			}
 		}
@@ -58,7 +58,8 @@ int main()
 	rames.emplace_back(1);
 	rames.emplace_back(2, &rames[0]);
 	rames.emplace_back(3, &rames[1]);
-
+	rames.at(0).setNextRame(&rames[2]);
+	
 	//création des stations : 
 	stations.emplace_back("Bois Rouge", 0, 400, 1);
 	stations.emplace_back("Bois Blanc", 400, 400, 0);
@@ -135,7 +136,13 @@ int main()
 				for (size_t i = 0; i < rows.size(); ++i) {
 					if (rows[i].button.getGlobalBounds().contains(mousePos)) {
 						std::cout << "Bouton de la rame " << rows[i].name << " cliqué !" << std::endl;
-						// Actions à effectuer lorsqu'un bouton est cliqué
+						if (rames.at(i).getUrgence() == 1) {
+							rames.at(i).setUrgence(0);
+						}
+						else {
+							rames.at(i).setUrgence(1);
+						}
+						
 					}
 				}
 			}

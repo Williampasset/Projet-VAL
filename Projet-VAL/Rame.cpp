@@ -51,6 +51,9 @@ double Rame::distanceToNextRame(){
 		return NextRame->getDistanceTotal() - getDistanceTotal();
 	}
 }
+void Rame::setNextRame(Rame* NextRame_){
+	NextRame = NextRame_;
+}
 void Rame::setDistanceTotal(const double& distance){
 	distanceTotal = distance;
 }
@@ -66,10 +69,10 @@ void Rame::Avancer(Station& nextStation) {
 	float distanceacc = 0;
 	float distanceconst = 0;
 	float distancedec = 0;
-    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1) ) {
+    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1) || (urgence && getV() >= 1)  && distanceToNextRame() > SECURDISTANCE) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
-		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > STOPDISTANCE ) {//condition d'acceleration
+		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > STOPDISTANCE && !urgence) {//condition d'acceleration
 			if (distanceacc == 0) {
 				time = 0.1;
 			}
@@ -77,7 +80,7 @@ void Rame::Avancer(Station& nextStation) {
 			distance = distanceacc;
 			setV((1.4) * (time));
 		}
-		else if ((nextStation.getDistanceBefStation()) - distance < STOPDISTANCE) {//décélération normale
+		else if (((nextStation.getDistanceBefStation()) - distance < STOPDISTANCE) || (urgence && getV() >= 1) ) {//décélération normale
 			if (distancedec == 0) {
 				time = 0.1;
 			}
