@@ -69,8 +69,8 @@ int main()
 	stop_source s_source;
 	
 	jthread thr1(fonctionnement, s_source.get_token(), ref(rames.at(0)) ,ref(stations));
-	//jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
-	//jthread thr3(fonctionnement, s_source.get_token(), ref(rames.at(2)), ref(stations));
+	jthread thr2(fonctionnement, s_source.get_token(), ref(rames.at(1)), ref(stations));
+	jthread thr3(fonctionnement, s_source.get_token(), ref(rames.at(2)), ref(stations));
 
 	
 	 // Création de la fenêtre SFML
@@ -147,10 +147,10 @@ int main()
 
 		//Affichage des rames
 		for(auto& rame : rames){
-			ObjetSprite.at(i).setPosition(rame.getXpos(), rame.getYpos());
 			if (rame.getRotate()) {
 				ObjetSprite.at(i).setScale(rame.getDirection() == 1 ? -(0.25) : 0.25, 0.25);
 			}
+			ObjetSprite.at(i).setPosition(rame.getXpos(), rame.getYpos());
 			if (rame.getGo()) {
 				window.draw(ObjetSprite.at(i));
 			}
