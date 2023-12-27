@@ -40,6 +40,12 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 	}
 }
 
+//Pour le tableau : 
+struct Row {
+	string name;
+	RectangleShape button;
+};
+
 int main()
 {
 
@@ -50,8 +56,8 @@ int main()
 	rames.reserve(RAMENOMBER);//A MODIFIER SELON LE NOMBRE DE RAME-->Sinon bug sur les adresses
 	//création des rames : 
 	rames.emplace_back(1);
-	//rames.emplace_back(2, &rames[0]);
-	//rames.emplace_back(3, &rames[1]);
+	rames.emplace_back(2, &rames[0]);
+	rames.emplace_back(3, &rames[1]);
 
 	//création des stations : 
 	stations.emplace_back("Bois Rouge", 0, 400, 1);
@@ -100,7 +106,23 @@ int main()
 
 	// Indice du point actuel sur le trajet
     size_t index = 0;
+	// Pour le tableau 
+
+	vector<Row> rows{
+	   {"Rame 1", sf::RectangleShape(sf::Vector2f(50, 20))},
+	   {"Rame 2", sf::RectangleShape(sf::Vector2f(50, 20))}
+	  
+	};
 	
+	sf::Vector2f tablePosition(500.f, 500.f);
+	
+	float rowSpacing = 30.f;
+
+	// Position et taille des boutons
+	float buttonWidth = 50.f;
+	float buttonHeight = 20.f;
+	
+
     // Boucle principale qui permet d'afficher le programme
     while (window.isOpen()) {
 		//Initialisation de la fenêtre d'affichage
@@ -108,10 +130,21 @@ int main()
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
+			if (event.type == Event::MouseButtonPressed) {
+				Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
+				for (size_t i = 0; i < rows.size(); ++i) {
+					if (rows[i].button.getGlobalBounds().contains(mousePos)) {
+						std::cout << "Bouton de la rame " << rows[i].name << " cliqué !" << std::endl;
+						// Actions à effectuer lorsqu'un bouton est cliqué
+					}
+				}
+			}
         }
+
 		window.clear();
 
 		auto i = 0;//Compteur
+
 		//Affichage des rames
 		for(auto& rame : rames){
 			ObjetSprite.at(i).setPosition(rame.getXpos(), rame.getYpos());
@@ -142,7 +175,25 @@ int main()
 			stationName.setPosition(pointCible.x, pointCible.y + point.getRadius() + 30);
 			window.draw(stationName);
 		}
-		
+
+		//Pour le tableau : 
+		for (size_t i = 0; i < rows.size(); ++i) {
+			Text text;
+			text.setFont(font);
+			text.setString(rows[i].name);
+			text.setCharacterSize(16);
+			text.setFillColor(Color::White);
+			text.setPosition(tablePosition.x, tablePosition.y + i * rowSpacing);
+			window.draw(text);
+
+			rows[i].button.setSize(Vector2f(buttonWidth, buttonHeight));
+			rows[i].button.setPosition(tablePosition.x + 150.f, tablePosition.y + i * rowSpacing);
+			rows[i].button.setFillColor(Color::Green);
+			window.draw(rows[i].button);
+		}
+
+
+
         window.display();
     }
 
