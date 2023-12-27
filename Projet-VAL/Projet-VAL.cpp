@@ -54,10 +54,10 @@ int main()
 	//rames.emplace_back(3, &rames[1]);
 
 	//création des stations : 
-	stations.emplace_back("Bois Rouge", 0, 1200, 1);
+	stations.emplace_back("Bois Rouge", 0, 400, 1);
 	stations.emplace_back("Bois Blanc", 400, 400, 0);
 	stations.emplace_back("Republique", 800, 400, 0);
-	stations.emplace_back("Jeremy", 1200, 1200, 2);
+	stations.emplace_back("Jeremy", 1200, 400, 2);
 	//Superviseur Super(rames); 
 	//implémentation des passagers par station au départ 
 	stop_source s_source;

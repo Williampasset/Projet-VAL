@@ -160,14 +160,16 @@ void Rame::Arreter(Station& StopStation) {
 		while (direction == 1 ? (angle <= endAngle) : (angle >= endAngle)) {
 			this_thread::sleep_for(10ms);
 			Rotate(angle);
-			direction == 1 ? angle += M_PI / 500 : angle -= M_PI / 500;
+			direction == 1 ? angle += M_PI / 400 : angle -= M_PI / 400;
 		}
 		rotate = true;
 		cout << "Changement de voie de la rame " << getId() << endl;
 		StopStation.setEtatMA(false);
 		setDistanceLigne(0);
+		this_thread::sleep_for(1s);
 		rotate = false;
 	}
+
 }
 
 void Rame::setDirection(const int& direction_) {
@@ -202,13 +204,13 @@ void Rame::setYpos(const float& newY) {
 }
 void Rame::setPos() {
 	if (direction == 1) {
-		setXpos((50 + (distanceLigne*1720/1200)));
+		setXpos((55 + (distanceLigne*1720/1200)));
 		cout << x << endl;
 		cout << distanceLigne << endl;
 		setYpos(40.f);
 	}
 	else {
-		setXpos(1770 - (distanceLigne * 1720 / 1200));
+		setXpos(1860 - (distanceLigne * 1720 / 1200));
 		setYpos(160.f);
 	}
 }
