@@ -11,14 +11,30 @@ Font font; // Définition de la police
 const string path_font = _PATH_FONT_; // Définition du chemin de la police
 
 void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {//Gére le fonctionnement entier d'une rame
+	//Copie du vecteur station initiale pour chaque rame 
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
 	while (!stop_token.stop_requested()) {
 		if ((itStation == NewStation.end() - 1 && rame.getDirection() == 1) || (itStation == NewStation.begin() && rame.getDirection() == -1)) {//condition pour la boucle avec les stations
+			//Arrêt à la station
 			rame.Arreter(*itStation);
+			//Echange des propriètés de départ et d'arrivé car changement de sens
 			NewStation.back().setDepart(NewStation.back().getDepart() != 1 ? 1 : 2);
 			NewStation.front().setDepart(NewStation.front().getDepart() != 2 ? 2 : 1);
+			//Changement de l'indice de direction de la rame
 			rame.setDirection((-1) * rame.getDirection());
+			//Inversion des distances pour chaque station
+			for (int i = 0; i < (NewStation.size() / 2); i++) {
+				// Sauvegarde temporaire de la valeur à la position i
+				int temp = NewStation.at(i).getDistanceBefStation();
+				int temp2 = NewStation.at(i).getDistanceDAstation();
+				// Copie de la valeur de la position opposée à la position i
+				NewStation.at(i).setDistanceBefStation(NewStation.at(NewStation.size() - 1 - i).getDistanceBefStation());
+				NewStation.at(i).setDistanceDA(NewStation.at(NewStation.size() - 1 - i).getDistanceDAstation());
+				// Copie de la valeur temporaire à la position opposée à la position i
+				NewStation.at(NewStation.size() - 1 - i).setDistanceBefStation(temp);
+				NewStation.at(NewStation.size() - 1 - i).setDistanceDA(temp2);
+			}
 			itStation->setEtatMA(false);
 			this_thread::sleep_for(5s);
 		}
@@ -26,13 +42,6 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 			if (itStation->getEtatMA()) {
 				if (rame.getDirection() == 1) {
 					rame.Avancer(*(itStation + 1));
-					/*if (rame.getUrgence() == true) {
-						while (rame.getUrgence() == true) {
-							this_thread::sleep_for(1s);
-							cout << "attente" << endl; 
-						}
-						rame.Avancer(*(itStation+1));
-					}*/
 					itStation++;
 				}
 				else{
@@ -69,7 +78,7 @@ int main()
 	
 	//création des stations : 
 	stations.emplace_back("Bois Rouge", 0, 600, 1);
-	stations.emplace_back("Bois Blanc", 600, 800, 0);
+	stations.emplace_back("Bois Blanc", 600, 600, 0);
 	stations.emplace_back("Republique", 1400, 800, 0);
 	stations.emplace_back("Jeremy", DISTANCELINE, 600, 2);
 	

@@ -12,8 +12,8 @@ class Station {
 	private : 
 		int Nbpersonne = 0; 
 		string nom;
-		double DistanceDA=0;
-		double distanceBefStation = 0;
+		float DistanceDA=0;
+		float distanceBefStation = 0;
 		bool etatMA = false;
 		int Depart = 0; //0 si non, 1 si oui, 2 si terminus de la ligne
 		//non modifiable
@@ -21,22 +21,22 @@ class Station {
 		float Tempsarretsec = 3;
 	public:
 		Station();
-		Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart);
+		Station(const string& nom_, const float& DistanceDA_, const float& distanceBefStation_, const int& depart);
 		Station(const Station& station);
 		~Station();
 		void setNbpassager(const int& Nbpersonne_);
 		void setEtatMA(const bool& etatMA_);
-		std::string getNom() const;
+		string getNom() const;
 		int getNbpassager() const;
-		double getDistanceDAstation() const;
+		float getDistanceDAstation() const;
 		bool getEtatMA() const;
 		float getTempspassager() const;
 		float getTempsarretsec() const;
 		int getDepart() const;
 		void setDepart(const int& Depart_);
-		void setDistanceDA(const double& DistanceDA_);
+		void setDistanceDA(const float& DistanceDA_);
 		void randPassager();
-		void setDistanceBefStation(const double& distanceBefStation_);
-		double getDistanceBefStation() const;
+		void setDistanceBefStation(const float& distanceBefStation_);
+		float getDistanceBefStation() const;
 		void copyStation(Station& OtherStation);
 };

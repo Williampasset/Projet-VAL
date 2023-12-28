@@ -3,7 +3,7 @@ using namespace std;
 Station::Station() {
     //cout<<"Nouvelle Station"<<endl;
 }
-Station::Station(const string& nom_, const float& DistanceDA_, const double& distanceBefStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_) {
+Station::Station(const string& nom_, const float& DistanceDA_, const float& distanceBefStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_) {
     //cout<<"Station "<<nom<<endl;
     Depart = depart;
 }
@@ -29,7 +29,7 @@ string Station::getNom() const{
 int Station::getNbpassager() const{
     return Nbpersonne;
 }
-double Station::getDistanceDAstation() const{
+float Station::getDistanceDAstation() const{
     return DistanceDA;
 }
 bool Station::getEtatMA() const{
@@ -52,7 +52,7 @@ void Station::setDepart(const int& Depart_){
         Depart = 0;
     }
 }
-void Station::setDistanceDA(const double& DistanceDA_){
+void Station::setDistanceDA(const float& DistanceDA_){
     DistanceDA = DistanceDA_;
 }
 void Station::randPassager(){
@@ -63,10 +63,10 @@ void Station::randPassager(){
         cout << "Station: " << getNom() << " Nombre de personne dans la station: " << getNbpassager() << endl;
     }
 }
-void Station::setDistanceBefStation(const double& distanceBefStation_) {
+void Station::setDistanceBefStation(const float& distanceBefStation_) {
     distanceBefStation = distanceBefStation_;
 }
-double Station::getDistanceBefStation() const{
+float Station::getDistanceBefStation() const{
     return distanceBefStation;
 }
 

@@ -13,12 +13,12 @@ Rame::Rame(const int& id_, Rame* NextRame_) : id(id_) {
 	cout << "Rame created 2" << endl;
 };
 Rame::~Rame(){
-    //cout<<"Rame destroyed"<<endl;
+    cout<<"Rame destroyed"<<endl;
 }
 void Rame::setV(const double& v_){
     v = v_;
 }
-void Rame::setDistanceOldStation(const double& distanceDA_){
+void Rame::setDistanceOldStation(const float& distanceDA_){
     distanceOldStation = distanceDA_;
 }
 void Rame::setNbpassager(const int& nbpassager_){
@@ -30,10 +30,10 @@ int Rame::getId() const{
 int Rame::getNbpassager() const{
     return nbpassager;
 }
-double Rame::getV() const{
+float Rame::getV() const{
     return v;
 }
-double Rame::getDistanceOldStation() const{
+float Rame::getDistanceOldStation() const{
     return distanceOldStation;
 }
 bool Rame::getUrgence() const{
@@ -42,7 +42,7 @@ bool Rame::getUrgence() const{
 void Rame::setUrgence(const bool& urgence_){
     urgence = urgence_;
 }
-double Rame::distanceToNextRame(){
+float Rame::distanceToNextRame(){
 	if (NextRame == nullptr) {
         cout << "Pas de rame suivante." << endl;
         return 0.0; // ou une valeur appropriée
@@ -50,17 +50,23 @@ double Rame::distanceToNextRame(){
 	else if(id!=1){
 		return abs(NextRame->getDistanceTotal() - getDistanceTotal());
 	}
-	else{
-		return DISTANCELINE - distanceLigne + NextRame->getDistanceTotal() ;
+	else if ((compteLine + NextRame->compteLine)%2 == 1 && compteLine>0) {
+		return NextRame->getDistanceTotal() + DISTANCELINE - distanceLigne;
+	}
+	else if ((compteLine + NextRame->compteLine) % 2 == 0 && compteLine > 0) {
+		return NextRame->getDistanceLigne() - distanceLigne;
+	}
+	else {
+		return SECURDISTANCE + 1;
 	}
 }
 void Rame::setNextRame(Rame* NextRame_){
 	NextRame = NextRame_;
 }
-void Rame::setDistanceTotal(const double& distance){
+void Rame::setDistanceTotal(const float& distance){
 	distanceTotal = distance;
 }
-double Rame::getDistanceTotal() const{
+float Rame::getDistanceTotal() const{
 	return distanceTotal;
 }
 void Rame::Avancer(Station& nextStation) {
@@ -74,8 +80,8 @@ void Rame::Avancer(Station& nextStation) {
 	float distancedec = 0;
 	float distanceUrgence = 0;
 	float vitesse = 0;
-	float stopDistance = 100;
-    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
+	float stopDistance = (VMAX*VMAX) / (2*ACC);
+    while (abs(distance - (nextStation.getDistanceBefStation())) >= 2 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
 		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo()){
@@ -99,7 +105,7 @@ void Rame::Avancer(Station& nextStation) {
 				cout<<"STOP DISTANCE: "<<stopDistance<<endl;
 			}
 		}
-		else if (((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV()>1) ) {//décélération normale
+		else if ((((nextStation.getDistanceBefStation()) - distance < stopDistance) && !urgence) || (urgence && getV()>1) ) {//décélération normale
 			if (distancedec == 0) {
 				time = 0.1;
 			}
@@ -135,7 +141,10 @@ void Rame::Avancer(Station& nextStation) {
 		setPos();
 	}
 	setDistanceLigne(nextStation.getDistanceDAstation());
-	setDistanceTotal(distanceTotActuel + nextStation.getDistanceDAstation());
+	setDistanceTotal((DISTANCELINE * compteLine) + nextStation.getDistanceDAstation());
+	cout << "Distance ligne: " << distanceLigne << endl;
+	cout << "Distance tot: " << distanceTotal << endl;
+	cout << "Distance totActu: " << distanceTotActuel << endl;
 	setPos();
 	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
@@ -207,6 +216,7 @@ void Rame::Arreter(Station& StopStation) {
 		StopStation.setEtatMA(false);
 		setDistanceLigne(0);
 		this_thread::sleep_for(1s);
+		compteLine++;
 		rotate = false;
 	}
 

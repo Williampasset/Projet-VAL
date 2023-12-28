@@ -38,8 +38,8 @@ const float DISTANCELINE = 2000;
 #define _PATH_FONT_ "../font/"
 #endif
 
-extern sf::Font font; // Déclaration externe de la police
+extern Font font; // Déclaration externe de la police
 
-extern const std::string path_font; // Déclaration externe du chemin de la police
+extern const string path_font; // Déclaration externe du chemin de la police
 
-const std::string path_image(_PATH_IMG_);
+const string path_image(_PATH_IMG_);
