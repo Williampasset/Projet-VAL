@@ -19,10 +19,10 @@ using namespace std;
 using namespace sf;
 
 const float SECURDISTANCE = 800;
-const float VMAX = 16.6;
+const float VMAX = 16.6f;
 const int NBPASSMAX = 10;
-const float ACC = 1.4;
-const float TIMEPASS = 0.5;
+const float ACC = 1.4f;
+const float TIMEPASS = 0.5f;
 const int RAMENOMBER = 3;
 const float DISTANCELINE = 2000;
 

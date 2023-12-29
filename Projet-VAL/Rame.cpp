@@ -82,7 +82,7 @@ void Rame::Avancer(Station& nextStation) {
 	float vitesse = 0;
 	float stopDistance = (VMAX*VMAX) / (2*ACC);
 	bool Dec = false;
-    while (abs(distance - (nextStation.getDistanceBefStation())) >= 2 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
+    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
 		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo() && !urgence && Dec == false){
@@ -103,13 +103,11 @@ void Rame::Avancer(Station& nextStation) {
 			setV((1.4) * (time));
 			vitesse = getV();
 			if(nextStation.getDistanceBefStation() - distance < 2*stopDistance && stopDistance == (VMAX*VMAX) / (2*ACC)){
-				cout<<"Distance parcourue: "<<distance<<endl;
 				stopDistance = abs((nextStation.getDistanceBefStation() - distance)/2);
-				cout<<"Distance avant station: "<<nextStation.getDistanceBefStation() - distance<<endl;
 				cout<<"STOP DISTANCE rame "<<getId()<<" : "<<stopDistance<<endl;
 			}
 		}
-		else if (((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV()>1)) {//décélération normale
+		else if ((((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV() > 1)) && getV()>0) {//décélération normale
 			Dec = true;
 			if (distancedec == 0) {
 				time = 0.1;
@@ -126,14 +124,17 @@ void Rame::Avancer(Station& nextStation) {
 			}
 		}
 		else if(urgence && (getV() <= 1)) {
-			cout<<"URGENCE"<<endl;
 			setV(0);
 			distanceacc = 0;
 			distanceconst = 0;
 			distancedec = 0;
 			distanceUrgence = distance;
+			if (nextStation.getDistanceBefStation() - distance < stopDistance) {
+				stopDistance = abs((nextStation.getDistanceBefStation() - distance) / 2);
+				cout << "STOP DISTANCE rame " << getId() << " : " << stopDistance << endl;
+			}
 		}
-		else if(!urgence){//Vitesse constante
+		else if(distanceacc != 0){//Vitesse constante
 			Dec = false;
 			if (distanceconst == 0) {
 				time = 0.1;
