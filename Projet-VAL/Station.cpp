@@ -1,33 +1,28 @@
 #include "Station.h"
 using namespace std;
 Station::Station() {
-    //cout<<"Nouvelle Station"<<endl;
+    cout<<"Nouvelle Station"<<endl;
 }
 Station::Station(const string& nom_, const float& DistanceDA_, const float& distanceBefStation_, const int& depart) : nom(nom_), DistanceDA(DistanceDA_), distanceBefStation(distanceBefStation_) {
-    //cout<<"Station "<<nom<<endl;
+    cout<<"Station "<<nom<<endl;
     Depart = depart;
 }
 Station::Station(const Station& station) {
-    Nbpersonne = station.getNbpassager();
+    NbpersonneDroite = station.getNbpassagerDroite();
+    NbpersonneGauche = station.getNbpassagerGauche();
     nom = station.getNom();
     DistanceDA = station.getDistanceDAstation();
     Depart = station.getDepart();
     distanceBefStation = station.getDistanceBefStation();
 }
 Station::~Station(){
-    //cout<<"Fin Station"<<endl;
-}
-void Station::setNbpassager(const int& Nbpersonne_){
-    Nbpersonne = Nbpersonne_;
+    cout<<"Fin Station"<<endl;
 }
 void Station::setEtatMA(const bool& etatMA_){
     etatMA = etatMA_;
 }
 string Station::getNom() const{
     return nom;
-}
-int Station::getNbpassager() const{
-    return Nbpersonne;
 }
 float Station::getDistanceDAstation() const{
     return DistanceDA;
@@ -55,12 +50,19 @@ void Station::setDepart(const int& Depart_){
 void Station::setDistanceDA(const float& DistanceDA_){
     DistanceDA = DistanceDA_;
 }
-void Station::randPassager(){
+void Station::randPassager(const int& direction_){
     srand(static_cast<unsigned int>(time(nullptr)));
-    if (getNbpassager() < 10 && getDepart() != 2 ) {
-        int randToAdd = rand() % (10 - getNbpassager());
-        Nbpersonne += randToAdd;
-        cout << "Station: " << getNom() << " Nombre de personne dans la station: " << getNbpassager() << endl;
+    if (getDepart() != 2) {
+        if(direction_ == 1 && getNbpassagerDroite() < 10){
+            int randToAdd = rand() % (10 - getNbpassagerDroite());
+            NbpersonneDroite += randToAdd;
+            cout << "Station: " << getNom() << " Nombre de personne dans la station a droite: " << getNbpassagerDroite() << endl;
+        }
+        else if(direction_ == -1 && getNbpassagerGauche() < 10){
+            int randToAdd = rand() % (10 - getNbpassagerGauche());
+            NbpersonneGauche += randToAdd;
+            cout << "Station: " << getNom() << " Nombre de personne dans la station a gauche: " << getNbpassagerGauche() << endl;
+        }
     }
 }
 void Station::setDistanceBefStation(const float& distanceBefStation_) {
@@ -71,9 +73,22 @@ float Station::getDistanceBefStation() const{
 }
 
 void Station::copyStation(Station& OtherStation) {
-    Nbpersonne = OtherStation.getNbpassager();
+    NbpersonneDroite = OtherStation.getNbpassagerDroite();
+    NbpersonneGauche = OtherStation.getNbpassagerGauche();
     nom = OtherStation.getNom();
     DistanceDA = OtherStation.getDistanceDAstation();
     Depart = OtherStation.getDepart();
     distanceBefStation = OtherStation.getDistanceBefStation();
+}
+void Station::setNbpassagerDroite(const int& Nbpersonne_) {
+    NbpersonneDroite = Nbpersonne_;
+}
+void Station::setNbpassagerGauche(const int& Nbpersonne_) {
+    NbpersonneGauche = Nbpersonne_;
+}
+int Station::getNbpassagerDroite() const {
+    return NbpersonneDroite;
+}
+int Station::getNbpassagerGauche() const {
+    return NbpersonneGauche;
 }

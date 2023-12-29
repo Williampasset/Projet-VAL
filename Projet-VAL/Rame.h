@@ -39,7 +39,7 @@ public:
 	void setDistanceTotal(const float& distance);
 	float getDistanceTotal() const;
     void Avancer(Station& NextStation);
-    void Arreter(Station& StopStation);
+    void Arreter(Station& StopStation, Station& BaseStation);
 	void setDirection(const int& direction_);
 	int getDirection();
 	void setDistanceLigne(const float& distanceLigne_);
@@ -55,4 +55,5 @@ public:
 	bool getRotate() const;
 	void setNextRame(Rame* NextRame_);
 	bool getUrgenceAuto() const;
+	void setUrgenceAuto(const bool& urgenceAuto_);
 };

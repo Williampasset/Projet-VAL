@@ -81,10 +81,11 @@ void Rame::Avancer(Station& nextStation) {
 	float distanceUrgence = 0;
 	float vitesse = 0;
 	float stopDistance = (VMAX*VMAX) / (2*ACC);
+	bool Dec = false;
     while (abs(distance - (nextStation.getDistanceBefStation())) >= 2 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
 		this_thread::sleep_for(100ms);
 		time += 0.1;
-		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo()){
+		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo() && !urgence && Dec == false){
 			urgence = true;
 			urgenceAuto = true;
 		}
@@ -93,6 +94,7 @@ void Rame::Avancer(Station& nextStation) {
 			urgenceAuto = false;
 		}
 		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {//condition d'acceleration
+			Dec = false;
 			if (distanceacc == 0) {
 					time = 0.1;
 			}
@@ -100,12 +102,15 @@ void Rame::Avancer(Station& nextStation) {
 			distance = distanceacc;
 			setV((1.4) * (time));
 			vitesse = getV();
-			if(nextStation.getDistanceBefStation() - distance < 2*stopDistance && stopDistance == 100){
-				stopDistance = (nextStation.getDistanceBefStation() - distance)/2;
-				cout<<"STOP DISTANCE: "<<stopDistance<<endl;
+			if(nextStation.getDistanceBefStation() - distance < 2*stopDistance && stopDistance == (VMAX*VMAX) / (2*ACC)){
+				cout<<"Distance parcourue: "<<distance<<endl;
+				stopDistance = abs((nextStation.getDistanceBefStation() - distance)/2);
+				cout<<"Distance avant station: "<<nextStation.getDistanceBefStation() - distance<<endl;
+				cout<<"STOP DISTANCE rame "<<getId()<<" : "<<stopDistance<<endl;
 			}
 		}
-		else if ((((nextStation.getDistanceBefStation()) - distance < stopDistance) && !urgence) || (urgence && getV()>1) ) {//décélération normale
+		else if (((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV()>1)) {//décélération normale
+			Dec = true;
 			if (distancedec == 0) {
 				time = 0.1;
 			}
@@ -121,6 +126,7 @@ void Rame::Avancer(Station& nextStation) {
 			}
 		}
 		else if(urgence && (getV() <= 1)) {
+			cout<<"URGENCE"<<endl;
 			setV(0);
 			distanceacc = 0;
 			distanceconst = 0;
@@ -128,6 +134,7 @@ void Rame::Avancer(Station& nextStation) {
 			distanceUrgence = distance;
 		}
 		else if(!urgence){//Vitesse constante
+			Dec = false;
 			if (distanceconst == 0) {
 				time = 0.1;
 			}
@@ -136,15 +143,12 @@ void Rame::Avancer(Station& nextStation) {
 			setV(VMAX);
 		}
 		setDistanceOldStation(distance);
-		setDistanceTotal(distance + distanceTotActuel);
-		setDistanceLigne(distance + distanceLigneActuel);
+		setDistanceTotal(abs(distance + distanceTotActuel));
+		setDistanceLigne(abs(distance + distanceLigneActuel));
 		setPos();
 	}
 	setDistanceLigne(nextStation.getDistanceDAstation());
 	setDistanceTotal((DISTANCELINE * compteLine) + nextStation.getDistanceDAstation());
-	cout << "Distance ligne: " << distanceLigne << endl;
-	cout << "Distance tot: " << distanceTotal << endl;
-	cout << "Distance totActu: " << distanceTotActuel << endl;
 	setPos();
 	cout << "Arret station: " << nextStation.getNom() << endl;
 	setDistanceOldStation(0);
@@ -152,7 +156,7 @@ void Rame::Avancer(Station& nextStation) {
 	setV(0);
 }
 
-void Rame::Arreter(Station& StopStation) {
+void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 	while (getId() != 1 && distanceToNextRame() < SECURDISTANCE) {
 		this_thread::sleep_for(1s);
 	}
@@ -160,49 +164,57 @@ void Rame::Arreter(Station& StopStation) {
 	if (!Go) {
 		Go = true;
 	}
-	StopStation.randPassager();
-	if (StopStation.getNbpassager() > 0 && StopStation.getDepart() != 2) {
+	StopStation.randPassager(direction);
+	direction == 1 ? BaseStation.setNbpassagerDroite(StopStation.getNbpassagerDroite()) : BaseStation.setNbpassagerGauche(StopStation.getNbpassagerGauche());
+	if ((direction == 1 ? StopStation.getNbpassagerDroite() > 0 : StopStation.getNbpassagerGauche() > 0)  && StopStation.getDepart() != 2) {
 		auto n = 0;
 		if (StopStation.getDepart() != 1) {
 			n = rand() % (getNbpassager() + 1);
 		}
-		cout << "Nombre de personne qui sortent de la rame "<<getId()<<" : "<<  n << endl;
+		cout << "Nombre de personne qui sortent de la rame "<< getId() <<" : "<<  n << endl;
 		for (auto i = 0; i < n; i++) {
+			setNbpassager(getNbpassager() - 1);
 			this_thread::sleep_for(0.5s);
 		}
-		setNbpassager(getNbpassager() - n);
-		if (StopStation.getNbpassager() >= (10 - getNbpassager())) {
+		if (direction == 1 ? StopStation.getNbpassagerDroite() >= (10 - getNbpassager()) : StopStation.getNbpassagerGauche() >= (10 - getNbpassager())) {
 			n = 10 - getNbpassager();
-			StopStation.setNbpassager(StopStation.getNbpassager() - (10 - getNbpassager()));
 			for (auto i = 0; i < n; i++) {
+				setNbpassager(getNbpassager() + 1);
+				direction == 1 ? BaseStation.setNbpassagerDroite(BaseStation.getNbpassagerDroite() - 1) : BaseStation.setNbpassagerGauche(BaseStation.getNbpassagerGauche() - 1);
 				this_thread::sleep_for(0.5s);
 			}
+			direction == 1 ? StopStation.setNbpassagerDroite(StopStation.getNbpassagerDroite() - (10 - getNbpassager())) : StopStation.setNbpassagerGauche(StopStation.getNbpassagerGauche() - (10 - getNbpassager()));
 			cout << "Nombre de personne qui rentrent dans la rame " << getId() << " : " << n << endl;
-			setNbpassager(10);
 		}
 		else {
-			n = StopStation.getNbpassager();
-			setNbpassager(getNbpassager() + StopStation.getNbpassager());
+			n = (direction == 1 ? StopStation.getNbpassagerDroite() : StopStation.getNbpassagerGauche());
 			for (auto i = 0; i < n; i++) {
+				setNbpassager(getNbpassager() + 1);
+				direction == 1 ? BaseStation.setNbpassagerDroite(BaseStation.getNbpassagerDroite() - 1) : BaseStation.setNbpassagerGauche(BaseStation.getNbpassagerGauche() - 1);
 				this_thread::sleep_for(0.5s);
 			}
 			cout << "Nombre de personne qui rentrent dans la rame " << getId() << " : " << n << endl;
-			StopStation.setNbpassager(0);
+			direction == 1 ? StopStation.setNbpassagerDroite(0) : StopStation.setNbpassagerGauche(0);
 		}
 	}
 	else {
 		if (StopStation.getDepart() == 2) {
 			cout << "Nombre de personne qui sortent de la rame " << getId() << " : " << getNbpassager() << endl;
 			for (auto i = 0; i < getNbpassager(); i++) {
-				this_thread::sleep_for(0.5s);
+				this_thread::sleep_for(0.25s);
+				setNbpassager(getNbpassager() - 1);
+				direction == 1 ? BaseStation.setNbpassagerDroite(BaseStation.getNbpassagerDroite() + 1) : BaseStation.setNbpassagerGauche(BaseStation.getNbpassagerGauche() + 1);
+				this_thread::sleep_for(0.25s);
+				direction == 1 ? BaseStation.setNbpassagerDroite(BaseStation.getNbpassagerDroite() - 1) : BaseStation.setNbpassagerGauche(BaseStation.getNbpassagerGauche() - 1);
 			}
 			setNbpassager(0);
+			direction == 1 ? BaseStation.setNbpassagerDroite(0) : BaseStation.setNbpassagerGauche(0);
 		}
 	}
 	this_thread::sleep_for(3s);
 	StopStation.setEtatMA(true);
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
-	cout << "Nombre de passager station "<< StopStation.getNom() <<" : " << StopStation.getNbpassager() << endl;
+	cout << "Nombre de passager station "<< BaseStation.getNom() <<" : " << (direction == 1 ? BaseStation.getNbpassagerDroite() : BaseStation.getNbpassagerGauche()) << endl;
 	if (StopStation.getDepart() == 2) {
 		double angle =  direction == 1 ? (-1)*(M_PI / 2) : (M_PI / 2);
 		double endAngle = direction == 1 ? (M_PI / 2) : 3*M_PI/2 ;
@@ -279,4 +291,7 @@ bool Rame::getRotate() const{
 }
 bool Rame::getUrgenceAuto() const{
 	return urgenceAuto;
+}
+void Rame::setUrgenceAuto(const bool& urgenceAuto_){
+	urgenceAuto = urgenceAuto_;
 }

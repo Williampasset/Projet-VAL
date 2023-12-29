@@ -14,10 +14,15 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 	//Copie du vecteur station initiale pour chaque rame 
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
+	vector<Station>::iterator itStationBase = station.begin();
 	while (!stop_token.stop_requested()) {
+		for(auto i = 0; i<NewStation.size();i++){
+			NewStation.at(i).setNbpassagerDroite(station.at(i).getNbpassagerDroite());
+			NewStation.at(i).setNbpassagerGauche(station.at(i).getNbpassagerGauche());
+		}
 		if ((itStation == NewStation.end() - 1 && rame.getDirection() == 1) || (itStation == NewStation.begin() && rame.getDirection() == -1)) {//condition pour la boucle avec les stations
 			//Arrêt à la station
-			rame.Arreter(*itStation);
+			rame.Arreter(*itStation, *itStationBase);
 			//Echange des propriètés de départ et d'arrivé car changement de sens
 			NewStation.back().setDepart(NewStation.back().getDepart() != 1 ? 1 : 2);
 			NewStation.front().setDepart(NewStation.front().getDepart() != 2 ? 2 : 1);
@@ -43,14 +48,16 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 				if (rame.getDirection() == 1) {
 					rame.Avancer(*(itStation + 1));
 					itStation++;
+					itStationBase++;
 				}
 				else{
 					rame.Avancer(*(itStation - 1));
 					itStation--;
+					itStationBase--;
 				}
 			}
 			else{
-				rame.Arreter(*itStation);
+				rame.Arreter(*itStation, *itStationBase);
 			}
 		}
 	}
@@ -126,13 +133,15 @@ int main()
 	// Pour le tableau 
 
 	vector<Row> rows{
-	   {"Rame 1", sf::RectangleShape(sf::Vector2f(50, 20))},
-	   {"Rame 2", sf::RectangleShape(sf::Vector2f(50, 20))},
-	   {"Rame 3", sf::RectangleShape(sf::Vector2f(50, 20))}
+	   {"Rame 1", RectangleShape(Vector2f(50, 20))},
+	   {"Rame 2", RectangleShape(Vector2f(50, 20))},
+	   {"Rame 3", RectangleShape(Vector2f(50, 20))}
 	  
 	};
 	
-	sf::Vector2f tablePosition(500.f, 500.f);
+	Vector2f tablePosition(100.f, 800.f);
+
+	Vector2f tableStation(1200.f, 800.f);
 	
 	float rowSpacing = 30.f;
 	
@@ -151,17 +160,17 @@ int main()
 			if (event.type == Event::MouseButtonPressed) {
 				Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 				for (size_t i = 0; i < rows.size(); ++i) {
-					if (rows[i].button.getGlobalBounds().contains(mousePos)) {
+					if (rows[i].button.getGlobalBounds().contains(mousePos) && rames.at(i).getGo() == true) {
 						cout << "Bouton de la rame " << rows[i].name << " cliqué !" << endl;
-						if (rames.at(i).getUrgence() == 1) {
+						if (rames.at(i).getUrgence() == 1 && rames.at(i).getUrgenceAuto() == 0) {
 							rames.at(i).setUrgence(0);
-							cout <<"urgence"<<rames.at(i).getUrgence() << endl;
+							cout << "urgence " << rames.at(i).getUrgence() << endl;
 						}
 						else {
 							rames.at(i).setUrgence(1);
-						
-							cout <<"urgence"<< rames.at(i).getUrgence() << endl;
-						}
+							rames.at(i).setUrgenceAuto(0);
+							cout << "urgence " << rames.at(i).getUrgence() << endl;
+						}					
 						
 					}
 				}
@@ -184,29 +193,65 @@ int main()
 			i++;
 		}
 		//affichage des titres 
-		Text Titre;
-		Titre.setFont(font);
-		Titre.setString("Informations Rames :");
-		Titre.setCharacterSize(30);
-		Titre.setFillColor(Color::White);
-		Titre.setPosition(tablePosition.x, tablePosition.y -60.f);
-		window.draw(Titre);
+		Text TitreRame;
+		TitreRame.setFont(font);
+		TitreRame.setString("Informations Rames :");
+		TitreRame.setCharacterSize(30);
+		TitreRame.setFillColor(Color::White);
+		TitreRame.setPosition(tablePosition.x, tablePosition.y -80.f);
+		window.draw(TitreRame);
 		Text Titre1;
 		Titre1.setFont(font);
 		Titre1.setString("Vitesse :");
 		Titre1.setCharacterSize(20);
 		Titre1.setFillColor(Color::White);
-		Titre1.setPosition(tablePosition.x + 150.f, tablePosition.y - 30.f);
+		Titre1.setPosition(tablePosition.x + 150.f, tablePosition.y - 40.f);
 		window.draw(Titre1);
 		Text Titre2;
 		Titre2.setFont(font);
 		Titre2.setString("Distance :");
 		Titre2.setCharacterSize(20);
 		Titre2.setFillColor(Color::White);
-		Titre2.setPosition(tablePosition.x + 300.f, tablePosition.y - 30.f);
+		Titre2.setPosition(tablePosition.x + 300.f, tablePosition.y - 40.f);
 		window.draw(Titre2);
+		Text Titre3;
+		Titre3.setFont(font);
+		Titre3.setString("Nombre de passagers :");
+		Titre3.setCharacterSize(20);
+		Titre3.setFillColor(Color::White);
+		Titre3.setPosition(tablePosition.x + 450.f, tablePosition.y - 40.f);
+		window.draw(Titre3);
+		Text Titre4;
+		Titre4.setFont(font);
+		Titre4.setString("Superviseur :");
+		Titre4.setCharacterSize(20);
+		Titre4.setFillColor(Color::White);
+		Titre4.setPosition(tablePosition.x + 700.f, tablePosition.y - 40.f);
+		window.draw(Titre4);
+		//Pour les stations 
+		Text TitreStations;
+		TitreStations.setFont(font);
+		TitreStations.setString("Informations Stations :");
+		TitreStations.setCharacterSize(30);
+		TitreStations.setFillColor(Color::White);
+		TitreStations.setPosition(tableStation.x, tableStation.y - 80.f);
+		window.draw(TitreStations);
 
+		Text TitreStations2;
+		TitreStations2.setFont(font);
+		TitreStations2.setString("Nombres passagers sens aller -> :");
+		TitreStations2.setCharacterSize(16);
+		TitreStations2.setFillColor(Color::White);
+		TitreStations2.setPosition(tableStation.x+150.f, tableStation.y - 40.f);
+		window.draw(TitreStations2);
 
+		Text TitreStations3;
+		TitreStations3.setFont(font);
+		TitreStations3.setString("Nombres passagers sens retour <- :");
+		TitreStations3.setCharacterSize(16);
+		TitreStations3.setFillColor(Color::White);
+		TitreStations3.setPosition(tableStation.x+ 400.f, tableStation.y - 40.f);
+		window.draw(TitreStations3);
         //window.draw(backgroundSprite);
 		for (auto& station : stations) {
 			CircleShape point(15.f);
@@ -255,24 +300,68 @@ int main()
 			text3.setFillColor(Color::White);
 			text3.setPosition(tablePosition.x + 300.f, tablePosition.y + i * rowSpacing);
 			window.draw(text3);
+			//nombre de passager 
+			Text text4;
+			text4.setFont(font);
+			int nbrpassager = rames.at(i).getNbpassager();
+			text4.setString(to_string(nbrpassager));
+			text4.setCharacterSize(16);
+			text4.setFillColor(Color::White);
+			text4.setPosition(tablePosition.x + 450.f, tablePosition.y + i * rowSpacing);
+			window.draw(text4);
+
 			//bouton arrêt urgence 
 			rows[i].button.setSize(Vector2f(buttonWidth, buttonHeight));
-			rows[i].button.setPosition(tablePosition.x + 450.f, tablePosition.y + i * rowSpacing);
-			if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == false) {
-				rows[i].button.setFillColor(Color::Red);
-			}
-			else if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == true) {
-				rows[i].button.setFillColor(Color::Yellow);
+			rows[i].button.setPosition(tablePosition.x + 700.f, tablePosition.y + i * rowSpacing);
+			if (rames.at(i).getGo() == true) {
+				if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == false) {
+					rows[i].button.setFillColor(Color::Red);
+				}
+				else if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == true) {
+					rows[i].button.setFillColor(Color::Yellow);
+				}
+				else {
+					rows[i].button.setFillColor(Color::Green);
+				}
 			}
 			else {
-				rows[i].button.setFillColor(Color::Green);
+				rows[i].button.setFillColor(Color::White);
 			}
+			
 			
 			window.draw(rows[i].button);
 		}
+		//pour les Stations 
+		for (int e = 0; e < stations.size();e++) {
+			Text nomstations;
+			nomstations.setFont(font);
+			auto nomstat = stations.at(e).getNom();
+			nomstations.setString(nomstat);
+			nomstations.setCharacterSize(16);
+			nomstations.setFillColor(Color::White);
+			nomstations.setPosition(tableStation.x , tableStation.y + e * rowSpacing);
+			window.draw(nomstations);
+			Text text5;
+			text5.setFont(font);
+			int nbrpassagerstation = stations.at(e).getNbpassagerDroite();
+			text5.setString(to_string(nbrpassagerstation));
+			text5.setCharacterSize(16);
+			text5.setFillColor(Color::White);
+			text5.setPosition(tableStation.x + 150.f, tableStation.y + e * rowSpacing);
+			window.draw(text5);
 
+			Text text6;
+			text6.setFont(font);
+			int nbrpassagerstation2 = stations.at(e).getNbpassagerGauche();
+			text6.setString(to_string(nbrpassagerstation2));
+			text6.setCharacterSize(16);
+			text6.setFillColor(Color::White);
+			text6.setPosition(tableStation.x + 400.f, tableStation.y + e * rowSpacing);
+			window.draw(text6);
 
+		}
 
+		
         window.display();
     }
 

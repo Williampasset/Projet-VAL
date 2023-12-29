@@ -10,7 +10,8 @@
 using namespace std;
 class Station {
 	private : 
-		int Nbpersonne = 0; 
+		int NbpersonneDroite = 0;
+		int NbpersonneGauche = 0;
 		string nom;
 		float DistanceDA=0;
 		float distanceBefStation = 0;
@@ -24,10 +25,10 @@ class Station {
 		Station(const string& nom_, const float& DistanceDA_, const float& distanceBefStation_, const int& depart);
 		Station(const Station& station);
 		~Station();
-		void setNbpassager(const int& Nbpersonne_);
+		void setNbpassagerDroite(const int& Nbpersonne_);
 		void setEtatMA(const bool& etatMA_);
 		string getNom() const;
-		int getNbpassager() const;
+		int getNbpassagerDroite() const;
 		float getDistanceDAstation() const;
 		bool getEtatMA() const;
 		float getTempspassager() const;
@@ -35,8 +36,10 @@ class Station {
 		int getDepart() const;
 		void setDepart(const int& Depart_);
 		void setDistanceDA(const float& DistanceDA_);
-		void randPassager();
+		void randPassager(const int& direction_);
 		void setDistanceBefStation(const float& distanceBefStation_);
 		float getDistanceBefStation() const;
 		void copyStation(Station& OtherStation);
+		void setNbpassagerGauche(const int& Nbpersonne_);
+		int getNbpassagerGauche() const;
 };

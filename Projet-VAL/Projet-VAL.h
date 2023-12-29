@@ -18,7 +18,7 @@
 using namespace std;
 using namespace sf;
 
-const float SECURDISTANCE = 700;
+const float SECURDISTANCE = 800;
 const float VMAX = 16.6;
 const int NBPASSMAX = 10;
 const float ACC = 1.4;
