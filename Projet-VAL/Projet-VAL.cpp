@@ -6,6 +6,7 @@
 #include "Station.h"
 #include "Superviseur.h"
 
+
 Font font; // Définition de la police
 
 const string path_font = _PATH_FONT_; // Définition du chemin de la police
@@ -192,6 +193,25 @@ int main()
 			}
 			i++;
 		}
+		//affichage des stations 
+		for (auto& station : stations) {
+			CircleShape point(15.f);
+			point.setFillColor(Color::Red);
+			Vector2f pointCible(100 + (station.getDistanceDAstation()) * (1720) / DISTANCELINE, 100.f);
+			point.setPosition(pointCible);
+			window.draw(point);
+
+			Text stationName;
+			stationName.setFont(font); // Utilisation de la police de caractères par défaut de SFML
+			stationName.setCharacterSize(24);
+			stationName.setFillColor(Color::White);
+			stationName.setString(station.getNom());
+			FloatRect textRect = stationName.getLocalBounds();
+			stationName.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+			stationName.setPosition(pointCible.x, pointCible.y + point.getRadius() + 30);
+			window.draw(stationName);
+		}
+
 		//affichage des titres 
 		Text TitreRame;
 		TitreRame.setFont(font);
@@ -200,12 +220,19 @@ int main()
 		TitreRame.setFillColor(Color::White);
 		TitreRame.setPosition(tablePosition.x, tablePosition.y -80.f);
 		window.draw(TitreRame);
+		Text Titre0;
+		Titre0.setFont(font);
+		Titre0.setString("Noms des Rames :");
+		Titre0.setCharacterSize(20);
+		Titre0.setFillColor(Color::White);
+		Titre0.setPosition(tablePosition.x, tablePosition.y - 40.f);
+		window.draw(Titre0);
 		Text Titre1;
 		Titre1.setFont(font);
 		Titre1.setString("Vitesse :");
 		Titre1.setCharacterSize(20);
 		Titre1.setFillColor(Color::White);
-		Titre1.setPosition(tablePosition.x + 150.f, tablePosition.y - 40.f);
+		Titre1.setPosition(tablePosition.x + 200.f, tablePosition.y - 40.f);
 		window.draw(Titre1);
 		Text Titre2;
 		Titre2.setFont(font);
@@ -228,7 +255,8 @@ int main()
 		Titre4.setFillColor(Color::White);
 		Titre4.setPosition(tablePosition.x + 700.f, tablePosition.y - 40.f);
 		window.draw(Titre4);
-		//Pour les stations 
+
+		//Pour les titres des stations 
 		Text TitreStations;
 		TitreStations.setFont(font);
 		TitreStations.setString("Informations Stations :");
@@ -236,6 +264,14 @@ int main()
 		TitreStations.setFillColor(Color::White);
 		TitreStations.setPosition(tableStation.x, tableStation.y - 80.f);
 		window.draw(TitreStations);
+
+		Text TitreStations1;
+		TitreStations1.setFont(font);
+		TitreStations1.setString("Noms des stations :");
+		TitreStations1.setCharacterSize(16);
+		TitreStations1.setFillColor(Color::White);
+		TitreStations1.setPosition(tableStation.x, tableStation.y - 40.f);
+		window.draw(TitreStations1);
 
 		Text TitreStations2;
 		TitreStations2.setFont(font);
@@ -252,24 +288,7 @@ int main()
 		TitreStations3.setFillColor(Color::White);
 		TitreStations3.setPosition(tableStation.x+ 400.f, tableStation.y - 40.f);
 		window.draw(TitreStations3);
-        //window.draw(backgroundSprite);
-		for (auto& station : stations) {
-			CircleShape point(15.f);
-			point.setFillColor(Color::Red);
-			Vector2f pointCible(100 + (station.getDistanceDAstation())*(1720)/DISTANCELINE,100.f);
-			point.setPosition(pointCible);
-			window.draw(point);
-
-			Text stationName;
-			stationName.setFont(font); // Utilisation de la police de caractères par défaut de SFML
-			stationName.setCharacterSize(24);
-			stationName.setFillColor(Color::White);
-			stationName.setString(station.getNom());
-			FloatRect textRect = stationName.getLocalBounds();
-			stationName.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-			stationName.setPosition(pointCible.x, pointCible.y + point.getRadius() + 30);
-			window.draw(stationName);
-		}
+	
 
 		//Pour le tableau : 
 		for (size_t i = 0; i < rows.size(); ++i) {
@@ -288,7 +307,7 @@ int main()
 			text2.setString(to_string(vitesserame));
 			text2.setCharacterSize(16);
 			text2.setFillColor(Color::White);
-			text2.setPosition(tablePosition.x + 150.f, tablePosition.y + i * rowSpacing);
+			text2.setPosition(tablePosition.x + 200.f, tablePosition.y + i * rowSpacing);
 			window.draw(text2);
 
 			//distance de la rame 
