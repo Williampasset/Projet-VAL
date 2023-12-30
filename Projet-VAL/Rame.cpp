@@ -51,10 +51,10 @@ float Rame::distanceToNextRame(){
 		return abs(NextRame->getDistanceTotal() - getDistanceTotal());
 	}
 	else if ((compteLine + NextRame->compteLine)%2 == 1 && compteLine>0) {
-		return NextRame->getDistanceTotal() + DISTANCELINE - distanceLigne;
+		return NextRame->getDistanceLigne() - distanceLigne + DISTANCELINE;
 	}
 	else if ((compteLine + NextRame->compteLine) % 2 == 0 && compteLine > 0) {
-		return NextRame->getDistanceLigne() - distanceLigne;
+		return abs(NextRame->getDistanceLigne() - distanceLigne);
 	}
 	else {
 		return SECURDISTANCE + 1;
@@ -70,79 +70,99 @@ float Rame::getDistanceTotal() const{
 	return distanceTotal;
 }
 void Rame::Avancer(Station& nextStation) {
-    auto distance = getDistanceOldStation(); //distance de la rame par rapport à la rame d'avant, variable incrémenter pour calculer la distance en permanence
-    cout << "Station suivante: " << nextStation.getNom() << "\tRame: "<<getId()<< endl;//affichage de la station suivante, la station où on va 
-	float time = 0;
-	float distanceTotActuel = getDistanceTotal();
-	float distanceLigneActuel = getDistanceLigne();
-	float distanceacc = 0;
-	float distanceconst = 0;
-	float distancedec = 0;
-	float distanceUrgence = 0;
-	float vitesse = 0;
-	float stopDistance = (VMAX*VMAX) / (2*ACC);
-	bool Dec = false;
-    while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
-		this_thread::sleep_for(100ms);
-		time += 0.1;
-		if(distanceToNextRame() < SECURDISTANCE && NextRame->getGo() && !urgence && Dec == false){
+	auto distance = getDistanceOldStation(); //distance de la rame par rapport à la rame d'avant, variable incrémenter pour calculer la distance en permanence
+	cout << "Station suivante: " << nextStation.getNom() << "\tRame: " << getId() << endl;//affichage de la station suivante, la station où on va 
+	float time = 0;//Calcul le temps en s
+	float distanceTotActuel = getDistanceTotal();//Distance total parcouru par la rame
+	float distanceLigneActuel = getDistanceLigne();//Distance parcouru par la rame sur une ligne dans un sens
+	float distanceacc = 0;//Distance parcourue lors de l'acceleration de la rame
+	float distanceconst = 0;//Distance parcourue lorsque la rame est à vitesse constante
+	float distancedec = 0;//Distance parcourue lorsque la rame décelerre
+	float distanceUrgence = 0;//Distance parcourue lorsque l'état d'urgence est enclenché et que la rame s'arrête
+	float vitesse1 = 0;//Vitesse à stocker lorsqu'on passe de l'état d'acceleration à l'état de déceleration
+	float vitesse2 = 0;//Vitesse à stocker lorsqu'on passe de l'état deleceration à l'état d'acceleration
+	float stopDistance = (VMAX * VMAX) / (2 * ACC);//Distance à laquelle la rame doit décelerer et sur laquelle elle accelere
+	bool Dec = false;//Indique si la rame est en train de décelerer
+	while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
+		this_thread::sleep_for(100ms);//Pause de 100ms entre chaque itération
+		time += 0.1;//On rajoute au temps 0.1s 
+		if (distanceToNextRame() < SECURDISTANCE && NextRame->getGo() && !urgence && Dec == false) {//Si ces conditions sont respectés c'est que la rame est trop proche de la rame de devant et qu'elle doit décelerer pour reprendre une distance de sécurité suffisante
 			urgence = true;
 			urgenceAuto = true;
 		}
-		if(urgenceAuto && distanceToNextRame() > SECURDISTANCE){
+		else if (urgenceAuto && distanceToNextRame() > SECURDISTANCE) {//Sinon si elle est en urgenceAuto et que la distance est suffisante on desactive l'état d'urgence
 			urgence = false;
 			urgenceAuto = false;
 		}
 		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {//condition d'acceleration
-			Dec = false;
-			if (distanceacc == 0) {
-					time = 0.1;
+			if (Dec) {
+				distanceacc = 0;
+				distanceconst = 0;
 			}
-			distanceacc = (((ACC) * (time*time) * 0.5) + distancedec + distanceconst + distanceUrgence);
-			distance = distanceacc;
-			setV((1.4) * (time));
-			vitesse = getV();
-			if(nextStation.getDistanceBefStation() - distance < 2*stopDistance && stopDistance == (VMAX*VMAX) / (2*ACC)){
-				stopDistance = abs((nextStation.getDistanceBefStation() - distance)/2);
-				cout<<"STOP DISTANCE rame "<<getId()<<" : "<<stopDistance<<endl;
+			Dec = false;//On indique que la rame n'est pas en déceleration
+			if (distanceacc == 0) {//Si la distance d'acceleration est nulle
+				time = 0.1;//On initialise le temps à 0.1
 			}
-		}
-		else if ((((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV() > 1)) && getV()>0) {//décélération normale
-			Dec = true;
-			if (distancedec == 0) {
-				time = 0.1;
+			if (distancedec != 0) {
+				setV(vitesse2 + (1.4) * (time));//On modifie la vitesse en fonction du temps
 			}
-			if(getV()<VMAX && distanceconst == 0){
-				distancedec = ((vitesse * time - (ACC * (time * time) * 0.5)) + distanceacc);
-				distance = abs(distancedec);
-				setV(vitesse - (ACC*time));
+			else {
+				setV((1.4) * (time));//On modifie la vitesse en fonction du temps
 			}
-			else{
-				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);
-				distance = distancedec;
-				setV(VMAX - (ACC*time));
-			}
-		}
-		else if(urgence && (getV() <= 1)) {
-			setV(0);
-			distanceacc = 0;
-			distanceconst = 0;
-			distancedec = 0;
-			distanceUrgence = distance;
-			if (nextStation.getDistanceBefStation() - distance < stopDistance) {
-				stopDistance = abs((nextStation.getDistanceBefStation() - distance) / 2);
+			distanceacc = (((ACC) * (time * time) * 0.5) + distancedec + distanceconst + distanceUrgence + vitesse2*time);//On calcule la distance d'acceleration en prenant en compte les possibles distances initiales
+			distance = distanceacc;//On met la variable de distance à la distance calculer
+			vitesse1 = getV();//On stock la vitesse en cas de changement d'état en deceleration
+			if (nextStation.getDistanceBefStation() - distance < 2 * stopDistance && stopDistance == (VMAX * VMAX) / (2 * ACC)) {//On recalcule la distance d'arrêt si on est déjà trop proche de la prochaine station
+				stopDistance = (nextStation.getDistanceBefStation() - distance) / 2;//distance pour accelerer et pour decelerer
 				cout << "STOP DISTANCE rame " << getId() << " : " << stopDistance << endl;
 			}
 		}
-		else if(distanceacc != 0){//Vitesse constante
+		else if (((((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV() > 1))) && getV() > 0) {//décélération normale
+			if (!Dec) {
+				distancedec = 0;
+			}
+			if (distancedec == 0) {//De même que pour l'acceleration
+				distanceUrgence = 0;//On repasse la distance d'urgence à 0
+				time = 0.1;
+			}
+			if (getV() < VMAX && distanceconst == 0) {//Si la vitesse est inférieure à la vitesse maximale et que la distance en vitesse constante est nulle
+				cout << time << endl;
+				distancedec = ((vitesse1 * time - ((vitesse1 * ACC / VMAX) * time * time * 0.5)) + distanceacc);//on vient de passer de l'acc à la dec et donc on doit faire varier la vitesse en partant de la vitesse maximale atteinte en acc
+				distance = distancedec;//On modifie la distance
+				setV(vitesse1 - (ACC * time));//On change la vitesse
+				cout << getId() << "    " << vitesse1 << "      "<<distance<<endl;
+			}
+			else {//Sinon ça veut dire qu'on pas de l'état vitesse const à la dec
+				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);//Donc on décelere en partant de la vitesse max autorisé 
+				distance = distancedec;//On modifie la distance
+				setV(VMAX - (ACC * time));//Et la vitesse
+			}
+			vitesse2 = getV();
+			Dec = true;//On passe dans l'état de deceleration si on entre en urgence ou que la distance entre la rame et la station atteint la distance d'arrêt
+		}
+		else if (urgence && (getV() <= 1)) {//Sinon si on est en urgence et que la vitesse est inférieure à 1
+			setV(0);//On arrête la rame et on remet toutes les distances à 0 en stockant la distance à laquelle on s'est arrêté
+			distanceacc = 0;
+			distanceconst = 0;
+			distancedec = 0;
+			distanceUrgence = distance;//Stockage de la distance où on s'arrête
+			if (nextStation.getDistanceBefStation() - distance < stopDistance) {//Si besoin on recalcule la distance d'arrêt dans la cas où on s'arrête proche de la station 
+				stopDistance = (nextStation.getDistanceBefStation() - distance) / 2;
+				cout << "STOP DISTANCE urgence rame " << getId() << " : " << stopDistance << endl;
+			}
+		}
+		else if (distanceacc != 0 && !urgence) {//Vitesse constante
 			Dec = false;
 			if (distanceconst == 0) {
+				distanceUrgence = 0;
+				distancedec = 0;
 				time = 0.1;
 			}
 			distanceconst = ((VMAX * time) + distanceacc + distancedec);
 			distance = distanceconst;
 			setV(VMAX);
 		}
+		//On set toutes les distances et la position de la rame au bon endroit
 		setDistanceOldStation(distance);
 		setDistanceTotal(abs(distance + distanceTotActuel));
 		setDistanceLigne(abs(distance + distanceLigneActuel));
@@ -156,6 +176,8 @@ void Rame::Avancer(Station& nextStation) {
 	nextStation.setEtatMA(false);
 	setV(0);
 }
+
+
 
 void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 	while (getId() != 1 && distanceToNextRame() < SECURDISTANCE) {
