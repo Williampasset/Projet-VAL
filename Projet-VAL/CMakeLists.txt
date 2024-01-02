@@ -16,4 +16,4 @@ endif()
 find_package(SFML COMPONENTS window system graphics REQUIRED)
 link_libraries(sfml-graphics sfml-window)
 
-add_executable (Projet-VAL "Projet-VAL.cpp" "Projet-VAL.h" "Rame.cpp" "Rame.h" "Station.h" "Station.cpp" "Superviseur.h" "Superviseur.cpp" )
+add_executable (Projet-VAL "Projet-VAL.cpp" "Projet-VAL.h" "Rame.cpp" "Rame.h" "Station.h" "Station.cpp"   )

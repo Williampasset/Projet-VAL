@@ -15,7 +15,7 @@ Rame::Rame(const int& id_, Rame* NextRame_) : id(id_) {
 Rame::~Rame(){
     cout<<"Rame destroyed"<<endl;
 }
-void Rame::setV(const double& v_){
+void Rame::setV(const float& v_){
     v = v_;
 }
 void Rame::setDistanceOldStation(const float& distanceDA_){
@@ -45,7 +45,7 @@ void Rame::setUrgence(const bool& urgence_){
 float Rame::distanceToNextRame(){
 	if (NextRame == nullptr) {
         cout << "Pas de rame suivante." << endl;
-        return 0.0; // ou une valeur appropriée
+        return 0.f; 
     }
 	else if(id!=1){
 		return abs(NextRame->getDistanceTotal() - getDistanceTotal());
@@ -69,7 +69,7 @@ void Rame::setDistanceTotal(const float& distance){
 float Rame::getDistanceTotal() const{
 	return distanceTotal;
 }
-void Rame::Avancer(Station& nextStation) {
+void Rame::Avancer(Station& nextStation, Station& BaseStation) {
 	auto distance = getDistanceOldStation(); //distance de la rame par rapport à la rame d'avant, variable incrémenter pour calculer la distance en permanence
 	cout << "Station suivante: " << nextStation.getNom() << "\tRame: " << getId() << endl;//affichage de la station suivante, la station où on va 
 	float time = 0;//Calcul le temps en s
@@ -83,9 +83,13 @@ void Rame::Avancer(Station& nextStation) {
 	float vitesse2 = 0;//Vitesse à stocker lorsqu'on passe de l'état deleceration à l'état d'acceleration
 	float stopDistance = (VMAX * VMAX) / (2 * ACC);//Distance à laquelle la rame doit décelerer et sur laquelle elle accelere
 	bool Dec = false;//Indique si la rame est en train de décelerer
+	//Initialisation des passagers à la prochaine station
+	nextStation.randPassager(direction);
+	direction == 1 ? BaseStation.setNbpassagerDroite(nextStation.getNbpassagerDroite()) : BaseStation.setNbpassagerGauche(nextStation.getNbpassagerGauche());
+	//Boucle d'avancement de la rame
 	while (abs(distance - (nextStation.getDistanceBefStation())) >= 1 || (nextStation.getDepart() == 1 && abs(distance - (nextStation.getDistanceDAstation())) >= 1)) {
 		this_thread::sleep_for(100ms);//Pause de 100ms entre chaque itération
-		time += 0.1;//On rajoute au temps 0.1s 
+		time += 0.1f;//On rajoute au temps 0.1s 
 		if (distanceToNextRame() < SECURDISTANCE && NextRame->getGo() && !urgence && Dec == false) {//Si ces conditions sont respectés c'est que la rame est trop proche de la rame de devant et qu'elle doit décelerer pour reprendre une distance de sécurité suffisante
 			urgence = true;
 			urgenceAuto = true;
@@ -94,53 +98,55 @@ void Rame::Avancer(Station& nextStation) {
 			urgence = false;
 			urgenceAuto = false;
 		}
-		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {//condition d'acceleration
+		//Acceleration
+		if (getV() < VMAX && (nextStation.getDistanceBefStation()) - distance > stopDistance && !urgence) {
 			if (Dec) {
 				distanceacc = 0;
 				distanceconst = 0;
 			}
 			Dec = false;//On indique que la rame n'est pas en déceleration
 			if (distanceacc == 0) {//Si la distance d'acceleration est nulle
-				time = 0.1;//On initialise le temps à 0.1
+				time = 0.1f;//On initialise le temps à 0.1
 			}
 			if (distancedec != 0) {
-				setV(vitesse2 + (1.4) * (time));//On modifie la vitesse en fonction du temps
+				setV(vitesse2 + (1.4f) * (time));//On modifie la vitesse en fonction du temps
 			}
 			else {
-				setV((1.4) * (time));//On modifie la vitesse en fonction du temps
+				setV((1.4f) * (time));//On modifie la vitesse en fonction du temps
 			}
-			distanceacc = (((ACC) * (time * time) * 0.5) + distancedec + distanceconst + distanceUrgence + vitesse2*time);//On calcule la distance d'acceleration en prenant en compte les possibles distances initiales
+			distanceacc = (((ACC) * (time * time) * 0.5f) + distancedec + distanceconst + distanceUrgence + vitesse2*time);//On calcule la distance d'acceleration en prenant en compte les possibles distances initiales
 			distance = distanceacc;//On met la variable de distance à la distance calculer
 			vitesse1 = getV();//On stock la vitesse en cas de changement d'état en deceleration
 			if (nextStation.getDistanceBefStation() - distance < 2 * stopDistance && stopDistance == (VMAX * VMAX) / (2 * ACC)) {//On recalcule la distance d'arrêt si on est déjà trop proche de la prochaine station
 				stopDistance = (nextStation.getDistanceBefStation() - distance) / 2;//distance pour accelerer et pour decelerer
-				cout << "STOP DISTANCE rame " << getId() << " : " << stopDistance << endl;
 			}
 		}
-		else if (((((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV() > 1))) && getV() > 0) {//décélération normale
+		//Deceleration
+		else if (((((nextStation.getDistanceBefStation()) - distance < stopDistance) || (urgence && getV() > 1))) && getV() > 0) {
 			if (!Dec) {
 				distancedec = 0;
 			}
 			if (distancedec == 0) {//De même que pour l'acceleration
 				distanceUrgence = 0;//On repasse la distance d'urgence à 0
-				time = 0.1;
+				time = 0.1f;
 			}
 			if (getV() < VMAX && distanceconst == 0) {//Si la vitesse est inférieure à la vitesse maximale et que la distance en vitesse constante est nulle
 				cout << time << endl;
-				distancedec = ((vitesse1 * time - ((vitesse1 * ACC / VMAX) * time * time * 0.5)) + distanceacc);//on vient de passer de l'acc à la dec et donc on doit faire varier la vitesse en partant de la vitesse maximale atteinte en acc
+				distancedec = ((vitesse1 * time - ((vitesse1 * ACC / VMAX) * time * time * 0.5f)) + distanceacc);//on vient de passer de l'acc à la dec et donc on doit faire varier la vitesse en partant de la vitesse maximale atteinte en acc
 				distance = distancedec;//On modifie la distance
 				setV(vitesse1 - (ACC * time));//On change la vitesse
 				cout << getId() << "    " << vitesse1 << "      "<<distance<<endl;
 			}
 			else {//Sinon ça veut dire qu'on pas de l'état vitesse const à la dec
-				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5)) + distanceconst);//Donc on décelere en partant de la vitesse max autorisé 
+				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5f)) + distanceconst);//Donc on décelere en partant de la vitesse max autorisé 
 				distance = distancedec;//On modifie la distance
 				setV(VMAX - (ACC * time));//Et la vitesse
 			}
 			vitesse2 = getV();
 			Dec = true;//On passe dans l'état de deceleration si on entre en urgence ou que la distance entre la rame et la station atteint la distance d'arrêt
 		}
-		else if (urgence && (getV() <= 1)) {//Sinon si on est en urgence et que la vitesse est inférieure à 1
+		//Arret d'urgence
+		else if (urgence && (getV() <= 1)) {
 			setV(0);//On arrête la rame et on remet toutes les distances à 0 en stockant la distance à laquelle on s'est arrêté
 			distanceacc = 0;
 			distanceconst = 0;
@@ -148,15 +154,15 @@ void Rame::Avancer(Station& nextStation) {
 			distanceUrgence = distance;//Stockage de la distance où on s'arrête
 			if (nextStation.getDistanceBefStation() - distance < stopDistance) {//Si besoin on recalcule la distance d'arrêt dans la cas où on s'arrête proche de la station 
 				stopDistance = (nextStation.getDistanceBefStation() - distance) / 2;
-				cout << "STOP DISTANCE urgence rame " << getId() << " : " << stopDistance << endl;
 			}
 		}
-		else if (distanceacc != 0 && !urgence) {//Vitesse constante
+		//Vitesse constante
+		else if (distanceacc != 0 && !urgence) {
 			Dec = false;
 			if (distanceconst == 0) {
 				distanceUrgence = 0;
 				distancedec = 0;
-				time = 0.1;
+				time = 0.1f;
 			}
 			distanceconst = ((VMAX * time) + distanceacc + distancedec);
 			distance = distanceconst;
@@ -168,6 +174,7 @@ void Rame::Avancer(Station& nextStation) {
 		setDistanceLigne(abs(distance + distanceLigneActuel));
 		setPos();
 	}
+	//On replace la rame au bonne endroit et on réinitialise les variables
 	setDistanceLigne(nextStation.getDistanceDAstation());
 	setDistanceTotal((DISTANCELINE * compteLine) + nextStation.getDistanceDAstation());
 	setPos();
@@ -180,25 +187,35 @@ void Rame::Avancer(Station& nextStation) {
 
 
 void Rame::Arreter(Station& StopStation, Station& BaseStation) {
+	//Rame arrêter tant que celle de devant n'est pas assez loin
 	while (getId() != 1 && distanceToNextRame() < SECURDISTANCE) {
 		this_thread::sleep_for(1s);
 	}
+	//On place la rame
 	setPos();
+	//Indication que la rame est partie
 	if (!Go) {
 		Go = true;
 	}
-	StopStation.randPassager(direction);
-	direction == 1 ? BaseStation.setNbpassagerDroite(StopStation.getNbpassagerDroite()) : BaseStation.setNbpassagerGauche(StopStation.getNbpassagerGauche());
+	//Calcul des passagers dans le cas où la rame est au départ
+	if (StopStation.getDepart() == 1) {
+		StopStation.randPassager(direction);
+		direction == 1 ? BaseStation.setNbpassagerDroite(StopStation.getNbpassagerDroite()) : BaseStation.setNbpassagerGauche(StopStation.getNbpassagerGauche());
+	}
+	//Boucle principale concernant les stations qui ne sont pas des terminus
 	if ((direction == 1 ? StopStation.getNbpassagerDroite() > 0 : StopStation.getNbpassagerGauche() > 0)  && StopStation.getDepart() != 2) {
 		auto n = 0;
+		//Nombre aléatoire de personne sortant de la rame
 		if (StopStation.getDepart() != 1) {
 			n = rand() % (getNbpassager() + 1);
 		}
 		cout << "Nombre de personne qui sortent de la rame "<< getId() <<" : "<<  n << endl;
+		//Les personnes sortent une par une
 		for (auto i = 0; i < n; i++) {
 			setNbpassager(getNbpassager() - 1);
 			this_thread::sleep_for(0.5s);
 		}
+		//Cas où il y a trop de passager à la station pour que tout le monde rentre dans la rame
 		if (direction == 1 ? StopStation.getNbpassagerDroite() >= (10 - getNbpassager()) : StopStation.getNbpassagerGauche() >= (10 - getNbpassager())) {
 			n = 10 - getNbpassager();
 			for (auto i = 0; i < n; i++) {
@@ -209,6 +226,7 @@ void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 			direction == 1 ? StopStation.setNbpassagerDroite(StopStation.getNbpassagerDroite() - (10 - getNbpassager())) : StopStation.setNbpassagerGauche(StopStation.getNbpassagerGauche() - (10 - getNbpassager()));
 			cout << "Nombre de personne qui rentrent dans la rame " << getId() << " : " << n << endl;
 		}
+		//Cas où tous les passagers de la station rentrent dans la rame
 		else {
 			n = (direction == 1 ? StopStation.getNbpassagerDroite() : StopStation.getNbpassagerGauche());
 			for (auto i = 0; i < n; i++) {
@@ -220,7 +238,9 @@ void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 			direction == 1 ? StopStation.setNbpassagerDroite(0) : StopStation.setNbpassagerGauche(0);
 		}
 	}
+	//Cas où la station est un terminus
 	else {
+		//On fait sortir tous les passagers avant de changer de voie
 		if (StopStation.getDepart() == 2) {
 			cout << "Nombre de personne qui sortent de la rame " << getId() << " : " << getNbpassager() << endl;
 			for (auto i = 0; i < getNbpassager(); i++) {
@@ -234,10 +254,12 @@ void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 			direction == 1 ? BaseStation.setNbpassagerDroite(0) : BaseStation.setNbpassagerGauche(0);
 		}
 	}
+	//Temps de pause obligatoire à une station
 	this_thread::sleep_for(3s);
 	StopStation.setEtatMA(true);
 	cout << "Nombre de passager rame " << getId() << ": " << getNbpassager() << endl;
 	cout << "Nombre de passager station "<< BaseStation.getNom() <<" : " << (direction == 1 ? BaseStation.getNbpassagerDroite() : BaseStation.getNbpassagerGauche()) << endl;
+	//Rotation lorsqu'on change de voie
 	if (StopStation.getDepart() == 2) {
 		double angle =  direction == 1 ? (-1)*(M_PI / 2) : (M_PI / 2);
 		double endAngle = direction == 1 ? (M_PI / 2) : 3*M_PI/2 ;
@@ -290,24 +312,21 @@ void Rame::setYpos(const float& newY) {
 void Rame::setPos() {
 	if (direction == 1) {
 		setXpos((55 + (distanceLigne*1720/DISTANCELINE)));
-		/*cout << x << endl;*/
-		/*cout << v << endl;*/
-		/*cout << distanceLigne << endl;*/
-		setYpos(40.f);
+		setYpos(240.f);
 	}
 	else {
 		setXpos(1860 - (distanceLigne * 1720 / DISTANCELINE));
-		setYpos(160.f);
+		setYpos(360.f);
 	}
 }
 void Rame::Rotate(const double& angle) {
 	//Position du point centrale
-	double centerX = (direction == 1 ? 1860 : 55);
-	double centerY = 100;
+	float centerX = (direction == 1 ? 1860.f : 55.f);
+	float centerY = 300.f;
 
 	// Effectue la rotation autour du centre (x, y)
-	setXpos(centerX + (cos(angle) * 60));
-	setYpos(centerY + (sin(angle) * 60));
+	setXpos(centerX + (float)(cos(angle) * 60.f));
+	setYpos(centerY + (float)(sin(angle) * 60.f));
 }
 bool Rame::getRotate() const{
 	return rotate;

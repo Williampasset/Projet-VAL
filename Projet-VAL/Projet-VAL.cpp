@@ -1,7 +1,6 @@
 ﻿#include "Projet-VAL.h"
 #include "Rame.h"
 #include "Station.h"
-#include "Superviseur.h"
 
 
 Font font; // Définition de la police
@@ -47,12 +46,12 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 		else {
 			if (itStation->getEtatMA()) {
 				if (rame.getDirection() == 1) {
-					rame.Avancer(*(itStation + 1));
+					rame.Avancer(*(itStation + 1), *(itStationBase + 1));
 					itStation++;
 					itStationBase++;
 				}
 				else{
-					rame.Avancer(*(itStation - 1));
+					rame.Avancer(*(itStation - 1), *(itStationBase - 1));
 					itStation--;
 					itStationBase--;
 				}
@@ -120,13 +119,13 @@ int main()
     }
     //backgroundSprite.setTexture(backgroundImage);
 
-	vector<Sprite> ObjetSprite; // Assure-toi que tu as déclaré ObjetSprite en tant que vecteur de sprites
+	vector<Sprite> ObjetSprite;
 
 	for (auto& rame : rames) {
-		Sprite objetSprite; // Déclare l'objetSprite à l'intérieur de la boucle pour éviter des problèmes de portée
+		Sprite objetSprite;
 		objetSprite.setTexture(objet);
-		objetSprite.setScale(Vector2f(0.25f, 0.25f)); // Ajoute 'f' aux valeurs pour indiquer des constantes flottantes
-		ObjetSprite.push_back(objetSprite); // Ajoute l'objetSprite au vecteur
+		objetSprite.setScale(Vector2f(0.25f, 0.25f));
+		ObjetSprite.push_back(objetSprite);
 	}
 
 	// Indice du point actuel sur le trajet
@@ -193,11 +192,11 @@ int main()
 			}
 			i++;
 		}
-		//affichage des stations 
+		// Affichage des stations 
 		for (auto& station : stations) {
 			CircleShape point(15.f);
 			point.setFillColor(Color::Red);
-			Vector2f pointCible(100 + (station.getDistanceDAstation()) * (1720) / DISTANCELINE, 100.f);
+			Vector2f pointCible(100 + (station.getDistanceDAstation()) * (1720) / DISTANCELINE, 300.f);
 			point.setPosition(pointCible);
 			window.draw(point);
 
@@ -212,7 +211,7 @@ int main()
 			window.draw(stationName);
 		}
 
-		//affichage des titres 
+		// Affichage des titres 
 		Text TitreRame;
 		TitreRame.setFont(font);
 		TitreRame.setString("Informations Rames :");
@@ -350,7 +349,7 @@ int main()
 			
 			window.draw(rows[i].button);
 		}
-		//pour les Stations 
+		// Pour les Stations 
 		for (int e = 0; e < stations.size();e++) {
 			Text nomstations;
 			nomstations.setFont(font);
@@ -360,6 +359,7 @@ int main()
 			nomstations.setFillColor(Color::White);
 			nomstations.setPosition(tableStation.x , tableStation.y + e * rowSpacing);
 			window.draw(nomstations);
+
 			Text text5;
 			text5.setFont(font);
 			int nbrpassagerstation = stations.at(e).getNbpassagerDroite();

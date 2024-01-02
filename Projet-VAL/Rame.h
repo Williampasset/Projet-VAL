@@ -26,7 +26,7 @@ public:
 	Rame(const int& id_);
 	Rame(const int& id_, Rame* NextRame_);
 	~Rame();
-	void setV(const double& v_);
+	void setV(const float& v_);
 	void setDistanceOldStation(const float& distanceDA_);
 	void setNbpassager(const int& nbpassager_);
 	int getId() const;
@@ -38,7 +38,7 @@ public:
 	float distanceToNextRame();
 	void setDistanceTotal(const float& distance);
 	float getDistanceTotal() const;
-    void Avancer(Station& NextStation);
+    void Avancer(Station& NextStation, Station& BaseStation);
     void Arreter(Station& StopStation, Station& BaseStation);
 	void setDirection(const int& direction_);
 	int getDirection();
