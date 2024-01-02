@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "vector"
 #include "algorithm"
 #include <iostream>
@@ -43,3 +44,5 @@ extern Font font; // Déclaration externe de la police
 extern const string path_font; // Déclaration externe du chemin de la police
 
 const string path_image(_PATH_IMG_);
+
+

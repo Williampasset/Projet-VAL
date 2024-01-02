@@ -1,7 +1,4 @@
-﻿// Projet-VAL.cpp : définit le point d'entrée de l'application.
-//
-
-#include "Projet-VAL.h"
+﻿#include "Projet-VAL.h"
 #include "Rame.h"
 #include "Station.h"
 #include "Superviseur.h"
@@ -11,11 +8,14 @@ Font font; // Définition de la police
 
 const string path_font = _PATH_FONT_; // Définition du chemin de la police
 
+
+
 void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station) {//Gére le fonctionnement entier d'une rame
 	//Copie du vecteur station initiale pour chaque rame 
 	vector<Station> NewStation(station);
 	vector<Station>::iterator itStation = NewStation.begin();
 	vector<Station>::iterator itStationBase = station.begin();
+
 	while (!stop_token.stop_requested()) {
 		for(auto i = 0; i<NewStation.size();i++){
 			NewStation.at(i).setNbpassagerDroite(station.at(i).getNbpassagerDroite());
@@ -32,8 +32,8 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 			//Inversion des distances pour chaque station
 			for (int i = 0; i < (NewStation.size() / 2); i++) {
 				// Sauvegarde temporaire de la valeur à la position i
-				int temp = NewStation.at(i).getDistanceBefStation();
-				int temp2 = NewStation.at(i).getDistanceDAstation();
+				float temp = NewStation.at(i).getDistanceBefStation();
+				float temp2 = NewStation.at(i).getDistanceDAstation();
 				// Copie de la valeur de la position opposée à la position i
 				NewStation.at(i).setDistanceBefStation(NewStation.at(NewStation.size() - 1 - i).getDistanceBefStation());
 				NewStation.at(i).setDistanceDA(NewStation.at(NewStation.size() - 1 - i).getDistanceDAstation());
@@ -185,7 +185,7 @@ int main()
 		//Affichage des rames
 		for(auto& rame : rames){
 			if (rame.getRotate()) {
-				ObjetSprite.at(i).setScale(rame.getDirection() == 1 ? -(0.25) : 0.25, 0.25);
+				ObjetSprite.at(i).setScale(rame.getDirection() == 1 ? -(0.25f) : 0.25f, 0.25f);
 			}
 			ObjetSprite.at(i).setPosition(rame.getXpos(), rame.getYpos());
 			if (rame.getGo()) {
