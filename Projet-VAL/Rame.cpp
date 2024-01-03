@@ -311,17 +311,17 @@ void Rame::setYpos(const float& newY) {
 }
 void Rame::setPos() {
 	if (direction == 1) {
-		setXpos((55 + (distanceLigne*1720/DISTANCELINE)));
+		setXpos((150 + (distanceLigne*1520/DISTANCELINE)));
 		setYpos(240.f);
 	}
 	else {
-		setXpos(1860 - (distanceLigne * 1720 / DISTANCELINE));
+		setXpos(1760 - (distanceLigne * 1520 / DISTANCELINE));
 		setYpos(360.f);
 	}
 }
 void Rame::Rotate(const double& angle) {
 	//Position du point centrale
-	float centerX = (direction == 1 ? 1860.f : 55.f);
+	float centerX = (direction == 1 ? 1760.f : 150.f);
 	float centerY = 300.f;
 
 	// Effectue la rotation autour du centre (x, y)

@@ -113,11 +113,11 @@ int main()
     Texture backgroundImage, objet;
     Sprite backgroundSprite;
 
-    if (/*!backgroundImage.loadFromFile(path_image + "rail.png") ||*/ !objet.loadFromFile(path_image + "train.png")) {
+    if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png")) {
         cerr << "Erreur pendant le chargement des images" << endl;
         return EXIT_FAILURE; // On ferme le programme
     }
-    //backgroundSprite.setTexture(backgroundImage);
+    backgroundSprite.setTexture(backgroundImage);
 
 	vector<Sprite> ObjetSprite;
 
@@ -178,7 +178,7 @@ int main()
         }
 
 		window.clear();
-
+		window.draw(backgroundSprite);
 		auto i = 0;//Compteur
 
 		//Affichage des rames
@@ -196,7 +196,7 @@ int main()
 		for (auto& station : stations) {
 			CircleShape point(15.f);
 			point.setFillColor(Color::Red);
-			Vector2f pointCible(100 + (station.getDistanceDAstation()) * (1720) / DISTANCELINE, 300.f);
+			Vector2f pointCible(200 + (station.getDistanceDAstation()) * (1520) / DISTANCELINE, 300.f);
 			point.setPosition(pointCible);
 			window.draw(point);
 
