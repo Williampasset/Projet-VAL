@@ -110,6 +110,8 @@ int main()
     // Fond d'écran
     Texture backgroundImage, objet, objet2;
     Sprite backgroundSprite;
+	
+
 
     if (!backgroundImage.loadFromFile(path_image + "rail.png") || !objet.loadFromFile(path_image + "train.png") || !objet2.loadFromFile(path_image + "trainarrêt.png") ) {
         cerr << "Erreur pendant le chargement des images" << endl;
@@ -117,8 +119,8 @@ int main()
     }
     backgroundSprite.setTexture(backgroundImage);
 
-	vector<Sprite> ObjetSprite;
-	vector<Sprite> ObjetSprite2;
+	vector<Sprite> ObjetSprite;//Rame en marche
+	vector<Sprite> ObjetSprite2;//Rame à l'arrêt
 
 	for (auto& rame : rames) {
 		Sprite objetSprite;
@@ -131,10 +133,13 @@ int main()
 		ObjetSprite2.push_back(objetSprite2);
 	}
 
+
+
 	// Indice du point actuel sur le trajet
     size_t index = 0;
 	// Pour le tableau 
 
+	//Création des rectangles pour l'arrêt d'urgence
 	vector<Row> rows{
 	   {"Rame 1", RectangleShape(Vector2f(50, 20))},
 	   {"Rame 2", RectangleShape(Vector2f(50, 20))},
@@ -202,20 +207,38 @@ int main()
 			}
 			i++;
 		}
+
+		//Chargement des images des stations
+		vector<Texture> textures;
+
+		for (int i = 0; i < stations.size(); ++i) {
+			Texture texture;
+			if (texture.loadFromFile(path_image + "station" + to_string(i) + ".png")) {
+				textures.push_back(texture);
+			}
+			else {
+				cerr << "Erreur de chargement de l'image pour la station " << i << std::endl;
+			}
+		}
+		
+		auto j = 0;//Compteur pour la boucle
 		// Affichage des stations 
 		for (auto& station : stations) {
-			CircleShape point(15.f);
-			point.setFillColor(Color::Red);
-			Vector2f pointCible(200 + (station.getDistanceDAstation()) * (1520) / DISTANCELINE, 300.f);
-			point.setPosition(pointCible);
-			window.draw(point);
+			//Placement des images
+			Sprite sprite(textures[j]);
+			Vector2f spriteCible(120 + (station.getDistanceDAstation()) * (1520) / DISTANCELINE, 190.f);
+			sprite.setScale(Vector2f(0.8f, 0.8f));
+			sprite.setPosition(spriteCible);
+			window.draw(sprite);
+			j++;
 
+			//Placement du texte sous les stations
 			Text stationName;
 			stationName.setFont(arial); // Utilisation de la police de caractères par défaut de SFML
-			stationName.setFillColor(Color::Black);
-			stationName.setCharacterSize(20);
+			stationName.setFillColor(Color::Red);
+			stationName.setCharacterSize(25);
 			stationName.setString(station.getNom());
-			stationName.setPosition(pointCible.x-30.f, pointCible.y +50.f);		
+			stationName.setPosition(spriteCible.x + 25.f, spriteCible.y + 160.f);		
 			window.draw(stationName);
 		}
 
