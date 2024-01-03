@@ -104,7 +104,7 @@ int main()
 
 	//Pour la police d'écriture 
 	// Charger la police ici
-	if (!font.loadFromFile(path_font + "arial.ttf")) {
+	if (!font.loadFromFile(path_font + "aeroport.ttf")) {
 		cerr << "Error while loading font" << endl;
 		return -1;
 	}
@@ -139,9 +139,9 @@ int main()
 	  
 	};
 	
-	Vector2f tablePosition(100.f, 800.f);
+	Vector2f tablePosition(150.f, 750.f);
 
-	Vector2f tableStation(1200.f, 800.f);
+	Vector2f tableStation(1200.f, 750.f);
 	
 	float rowSpacing = 30.f;
 	
@@ -215,42 +215,42 @@ int main()
 		Text TitreRame;
 		TitreRame.setFont(font);
 		TitreRame.setString("Informations Rames :");
-		TitreRame.setCharacterSize(30);
+		TitreRame.setCharacterSize(50);
 		TitreRame.setFillColor(Color::White);
 		TitreRame.setPosition(tablePosition.x, tablePosition.y -80.f);
 		window.draw(TitreRame);
 		Text Titre0;
 		Titre0.setFont(font);
 		Titre0.setString("Noms des Rames :");
-		Titre0.setCharacterSize(20);
+		Titre0.setCharacterSize(50);
 		Titre0.setFillColor(Color::White);
 		Titre0.setPosition(tablePosition.x, tablePosition.y - 40.f);
 		window.draw(Titre0);
 		Text Titre1;
 		Titre1.setFont(font);
 		Titre1.setString("Vitesse :");
-		Titre1.setCharacterSize(20);
+		Titre1.setCharacterSize(50);
 		Titre1.setFillColor(Color::White);
 		Titre1.setPosition(tablePosition.x + 200.f, tablePosition.y - 40.f);
 		window.draw(Titre1);
 		Text Titre2;
 		Titre2.setFont(font);
 		Titre2.setString("Distance :");
-		Titre2.setCharacterSize(20);
+		Titre2.setCharacterSize(50);
 		Titre2.setFillColor(Color::White);
 		Titre2.setPosition(tablePosition.x + 300.f, tablePosition.y - 40.f);
 		window.draw(Titre2);
 		Text Titre3;
 		Titre3.setFont(font);
 		Titre3.setString("Nombre de passagers :");
-		Titre3.setCharacterSize(20);
+		Titre3.setCharacterSize(50);
 		Titre3.setFillColor(Color::White);
 		Titre3.setPosition(tablePosition.x + 450.f, tablePosition.y - 40.f);
 		window.draw(Titre3);
 		Text Titre4;
 		Titre4.setFont(font);
 		Titre4.setString("Superviseur :");
-		Titre4.setCharacterSize(20);
+		Titre4.setCharacterSize(50);
 		Titre4.setFillColor(Color::White);
 		Titre4.setPosition(tablePosition.x + 700.f, tablePosition.y - 40.f);
 		window.draw(Titre4);
@@ -259,7 +259,7 @@ int main()
 		Text TitreStations;
 		TitreStations.setFont(font);
 		TitreStations.setString("Informations Stations :");
-		TitreStations.setCharacterSize(30);
+		TitreStations.setCharacterSize(50);
 		TitreStations.setFillColor(Color::White);
 		TitreStations.setPosition(tableStation.x, tableStation.y - 80.f);
 		window.draw(TitreStations);
@@ -267,7 +267,7 @@ int main()
 		Text TitreStations1;
 		TitreStations1.setFont(font);
 		TitreStations1.setString("Noms des stations :");
-		TitreStations1.setCharacterSize(16);
+		TitreStations1.setCharacterSize(50);
 		TitreStations1.setFillColor(Color::White);
 		TitreStations1.setPosition(tableStation.x, tableStation.y - 40.f);
 		window.draw(TitreStations1);
@@ -275,7 +275,7 @@ int main()
 		Text TitreStations2;
 		TitreStations2.setFont(font);
 		TitreStations2.setString("Nombres passagers sens aller -> :");
-		TitreStations2.setCharacterSize(16);
+		TitreStations2.setCharacterSize(50);
 		TitreStations2.setFillColor(Color::White);
 		TitreStations2.setPosition(tableStation.x+150.f, tableStation.y - 40.f);
 		window.draw(TitreStations2);
@@ -283,7 +283,7 @@ int main()
 		Text TitreStations3;
 		TitreStations3.setFont(font);
 		TitreStations3.setString("Nombres passagers sens retour <- :");
-		TitreStations3.setCharacterSize(16);
+		TitreStations3.setCharacterSize(50);
 		TitreStations3.setFillColor(Color::White);
 		TitreStations3.setPosition(tableStation.x+ 400.f, tableStation.y - 40.f);
 		window.draw(TitreStations3);
@@ -295,7 +295,7 @@ int main()
 			Text text;
 			text.setFont(font);
 			text.setString(rows[i].name);
-			text.setCharacterSize(16);
+			text.setCharacterSize(50);
 			text.setFillColor(Color::White);
 			text.setPosition(tablePosition.x, tablePosition.y + i * rowSpacing);
 			window.draw(text);
@@ -304,7 +304,7 @@ int main()
 			text2.setFont(font);
 			float vitesserame = rames.at(i).getV();
 			text2.setString(to_string(vitesserame));
-			text2.setCharacterSize(16);
+			text2.setCharacterSize(50);
 			text2.setFillColor(Color::White);
 			text2.setPosition(tablePosition.x + 200.f, tablePosition.y + i * rowSpacing);
 			window.draw(text2);
@@ -314,7 +314,7 @@ int main()
 			text3.setFont(font);
 			float distancerame = rames.at(i).getDistanceTotal();
 			text3.setString(to_string(distancerame));
-			text3.setCharacterSize(16);
+			text3.setCharacterSize(50);
 			text3.setFillColor(Color::White);
 			text3.setPosition(tablePosition.x + 300.f, tablePosition.y + i * rowSpacing);
 			window.draw(text3);
@@ -323,7 +323,7 @@ int main()
 			text4.setFont(font);
 			int nbrpassager = rames.at(i).getNbpassager();
 			text4.setString(to_string(nbrpassager));
-			text4.setCharacterSize(16);
+			text4.setCharacterSize(50);
 			text4.setFillColor(Color::White);
 			text4.setPosition(tablePosition.x + 450.f, tablePosition.y + i * rowSpacing);
 			window.draw(text4);

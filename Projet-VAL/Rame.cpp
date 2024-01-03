@@ -312,11 +312,11 @@ void Rame::setYpos(const float& newY) {
 void Rame::setPos() {
 	if (direction == 1) {
 		setXpos((150 + (distanceLigne*1520/DISTANCELINE)));
-		setYpos(240.f);
+		setYpos(200.f);
 	}
 	else {
 		setXpos(1760 - (distanceLigne * 1520 / DISTANCELINE));
-		setYpos(360.f);
+		setYpos(400.f);
 	}
 }
 void Rame::Rotate(const double& angle) {
@@ -325,8 +325,8 @@ void Rame::Rotate(const double& angle) {
 	float centerY = 300.f;
 
 	// Effectue la rotation autour du centre (x, y)
-	setXpos(centerX + (float)(cos(angle) * 60.f));
-	setYpos(centerY + (float)(sin(angle) * 60.f));
+	setXpos(centerX + (float)(cos(angle) * 100.f));
+	setYpos(centerY + (float)(sin(angle) * 100.f));
 }
 bool Rame::getRotate() const{
 	return rotate;
