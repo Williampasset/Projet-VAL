@@ -4,7 +4,6 @@
 #include <vector>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include "vector"
 #include "algorithm"
 #include <iostream>
@@ -32,6 +31,8 @@ const float DISTANCELINE = 2000;
 #else
 #define _PATH_IMG_ "../img/"
 #endif
+
+
 
 #ifdef _MSC_VER 
 #define _PATH_FONT_ "C:/Program Files/SFML/font/"

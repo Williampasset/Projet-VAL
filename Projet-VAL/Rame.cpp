@@ -312,11 +312,11 @@ void Rame::setYpos(const float& newY) {
 void Rame::setPos() {
 	if (direction == 1) {
 		setXpos((150 + (distanceLigne*1520/DISTANCELINE)));
-		setYpos(200.f);
+		setYpos(190.f);
 	}
 	else {
 		setXpos(1760 - (distanceLigne * 1520 / DISTANCELINE));
-		setYpos(400.f);
+		setYpos(390.f);
 	}
 }
 void Rame::Rotate(const double& angle) {
