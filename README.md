@@ -1,6 +1,6 @@
 # Projet VAL
 
-Modélisation simplifiée d'un système de transport de type "VAL". Ce projet a été réalisé dans le cadre du cours de programmation en deuxième année de prépa intégrée.
+Modélisation simplifiée d'un système de transport de type "VAL" (Véhicule Automatique Léger). Ce projet a été réalisé dans le cadre du cours de programmation en deuxième année de prépa intégrée.
 
 ## Table des matières
 
