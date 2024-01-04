@@ -17,5 +17,5 @@ Modélisation simplifiée d'un système de transport de type "VAL" (Véhicule Au
 - Utilisez les boutons du superviseur pour intéragir avec les rames en marche.
 
 ## Réalisation
-Projet réalisé par Jeremy Lamour et William Passet, étudiants en CIR 2 à l'ISEN Lille.
+Projet réalisé par Jérémy Lamour et William Passet, étudiants en CIR 2 à l'ISEN Lille.
 Pour plus d'explication sur sa réalisation, une vidéo de présentation du projet et des difficultés rencontrées est disponible.
