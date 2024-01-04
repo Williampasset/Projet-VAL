@@ -131,11 +131,9 @@ void Rame::Avancer(Station& nextStation, Station& BaseStation) {
 				time = 0.1f;
 			}
 			if (getV() < VMAX && distanceconst == 0) {//Si la vitesse est inférieure à la vitesse maximale et que la distance en vitesse constante est nulle
-				cout << time << endl;
 				distancedec = ((vitesse1 * time - ((vitesse1 * ACC / VMAX) * time * time * 0.5f)) + distanceacc);//on vient de passer de l'acc à la dec et donc on doit faire varier la vitesse en partant de la vitesse maximale atteinte en acc
 				distance = distancedec;//On modifie la distance
 				setV(vitesse1 - (ACC * time));//On change la vitesse
-				cout << getId() << "    " << vitesse1 << "      "<<distance<<endl;
 			}
 			else {//Sinon ça veut dire qu'on pas de l'état vitesse const à la dec
 				distancedec = ((VMAX * time - (ACC * (time * time) * 0.5f)) + distanceconst);//Donc on décelere en partant de la vitesse max autorisé 
@@ -244,6 +242,7 @@ void Rame::Arreter(Station& StopStation, Station& BaseStation) {
 		if (StopStation.getDepart() == 2) {
 			cout << "Nombre de personne qui sortent de la rame " << getId() << " : " << getNbpassager() << endl;
 			for (auto i = 0; i < getNbpassager(); i++) {
+				cout << "Nombre passager : "<< getNbpassager() << endl;
 				this_thread::sleep_for(0.25s);
 				setNbpassager(getNbpassager() - 1);
 				direction == 1 ? BaseStation.setNbpassagerDroite(BaseStation.getNbpassagerDroite() + 1) : BaseStation.setNbpassagerGauche(BaseStation.getNbpassagerGauche() + 1);
@@ -316,7 +315,7 @@ void Rame::setPos() {
 	}
 	else {
 		setXpos(1760 - (distanceLigne * 1520 / DISTANCELINE));
-		setYpos(390.f);
+		setYpos(400.f);
 	}
 }
 void Rame::Rotate(const double& angle) {
