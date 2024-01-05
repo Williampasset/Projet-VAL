@@ -39,7 +39,7 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 				NewStation.at(NewStation.size() - 1 - i).setDistanceDA(temp2);
 			}
 			itStation->setEtatMA(false);
-			this_thread::sleep_for(5s);
+			this_thread::sleep_for(5s);// temps de la rotation 
 		}
 		else {
 			if (itStation->getEtatMA()) {
@@ -61,7 +61,7 @@ void fonctionnement(stop_token stop_token, Rame& rame, vector<Station>& station)
 	}
 }
 
-//Pour le tableau : 
+//Pour le tableau avec les boutons : 
 struct Row {
 	string name;
 	RectangleShape button;
@@ -69,7 +69,6 @@ struct Row {
 
 int main()
 {
-
 	srand(static_cast<unsigned int>(time(nullptr)));
 	//Initialisation des rames et des stations :
 	vector<Rame> rames;
@@ -146,9 +145,9 @@ int main()
 	   {"Rame 3", RectangleShape(Vector2f(50, 20))}
 	  
 	};
-	
+	//initialisation du tableau de gauche avec "informations des rames"
 	Vector2f tablePosition(110.f, 750.f);
-
+	//initialisation du tableau de gauche avec "informations des stations"
 	Vector2f tableStation(1200.f, 750.f);
 	
 	float rowSpacing = 30.f;
@@ -234,15 +233,16 @@ int main()
 
 			//Placement du texte sous les stations
 			Text stationName;
-			stationName.setFont(arial); // Utilisation de la police de caractères par défaut de SFML
-			stationName.setFillColor(Color::Red);
-			stationName.setCharacterSize(25);
-			stationName.setString(station.getNom());
-			stationName.setPosition(spriteCible.x + 25.f, spriteCible.y + 160.f);		
+			stationName.setFont(arial); // Utilisation de la police de arial 
+			stationName.setFillColor(Color::Red);// couleur du texte en rouge 
+			stationName.setCharacterSize(25);// taille du texte à 25  
+			stationName.setString(station.getNom());// récupération des noms des stations 
+			stationName.setPosition(spriteCible.x + 25.f, spriteCible.y + 160.f);//initialisation de la positions des noms 		
 			window.draw(stationName);
 		}
 
 		// Affichage des titres 
+		// Titres pour "Informations rames"
 		Text TitreRame;
 		TitreRame.setFont(font);
 		TitreRame.setString("Informations Rames");
@@ -286,7 +286,7 @@ int main()
 		Titre4.setPosition(tablePosition.x + 600.f, tablePosition.y - 40.f);
 		window.draw(Titre4);
 
-		//Pour les titres des stations 
+		//Pour les titres des Stations 
 		Text TitreStations;
 		TitreStations.setFont(font);
 		TitreStations.setString("Informations Stations");
@@ -320,7 +320,7 @@ int main()
 		window.draw(TitreStations3);
 	
 
-		//Pour le tableau : 
+		//Pour le tableau "Information Stations": 
 		for (size_t i = 0; i < rows.size(); ++i) {
 			//nom de la rame 
 			Text text;
@@ -362,6 +362,7 @@ int main()
 			//bouton arrêt urgence 
 			rows[i].button.setSize(Vector2f(buttonWidth, buttonHeight));
 			rows[i].button.setPosition(tablePosition.x + 600.f, tablePosition.y + i * rowSpacing+15.f);
+			// La couleur dépend de l'état de la rame et de l'action de l'utilisateur 
 			if (rames.at(i).getGo() == true) {
 				if (rames.at(i).getUrgence() == true && rames.at(i).getUrgenceAuto() == false) {
 					rows[i].button.setFillColor(Color::Red);
