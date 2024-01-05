@@ -9,8 +9,7 @@ Modélisation simplifiée d'un système de transport de type "VAL" (Véhicule Au
 - [Réalisation](#réalisation)
 
 ## Installation
-- Installer la bibliothèque SFML, puis glisser dans le dossier SFML "../Programmes/SFML/" les dossiers img et font.
-
+- Installer la bibliothèque SFML, puis glisser dans le dossier SFML "../Programmes/SFML/" les dossiers "img" et "font" présents dans la branche ultime, pour avoir toutes les ressources nécessaires au lancement du programme.
 ## Utilisation
 - Ouvrez le projet dans l'IDE de votre choix.
 - Compilez et exécutez le projet.
